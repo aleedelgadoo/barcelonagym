@@ -8,6 +8,7 @@ export interface SiteInfo {
   locationPhoto: string
   locationAddress: string
   mapsEmbed: string
+  plansSubtitle: string
 }
 
 export const DEFAULT_SITE: SiteInfo = {
@@ -18,6 +19,7 @@ export const DEFAULT_SITE: SiteInfo = {
   locationPhoto: '/fotomapa.png',
   locationAddress: 'Barcelona 1929',
   mapsEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3404.414550304101!2d-64.1570201!3d-31.430252499999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9432a2c856823349%3A0x71d2893d5dca038a!2sBARCELONA%20GYM!5e0!3m2!1ses-419!2sar!4v1781119169760!5m2!1ses-419!2sar',
+  plansSubtitle: 'Todos los pases incluyen acceso a Lockers, baños con vestuario y ducha, zona de hidratación y cobertura médica ante urgencias',
 }
 
 export interface DifferentialItem {

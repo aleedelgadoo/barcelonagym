@@ -386,6 +386,12 @@ function AdminPanel() {
               <Field label="Subtítulo" value={site.heroSubtitle} onChange={v => updateSite('heroSubtitle', v)} multiline />
             </div>
 
+            {/* Planes */}
+            <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <p style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>Sección Planes</p>
+              <Field label="Texto inferior del título" value={site.plansSubtitle ?? ''} onChange={v => updateSite('plansSubtitle', v)} multiline />
+            </div>
+
             {/* Ubicación */}
             <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
               <p style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>Sección Ubicación</p>

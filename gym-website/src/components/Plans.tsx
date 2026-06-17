@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { DEFAULT_SITE } from '../lib/store'
 
 function gridConfig(count: number): { maxWidth: number; columns: string } {
   if (count === 1) return { maxWidth: 380,  columns: '1fr' }
@@ -10,8 +11,9 @@ function gridConfig(count: number): { maxWidth: number; columns: string } {
 }
 
 export default function Plans() {
-  const { plans } = useData()
+  const { plans, site } = useData()
   const { maxWidth, columns } = gridConfig(plans.length)
+  const plansSubtitle = site.plansSubtitle ?? DEFAULT_SITE.plansSubtitle
 
   return (
     <section id="plans" style={{ background: '#0a0a0a', paddingBlock: 'clamp(36px, 5vw, 68px)' }}>
@@ -30,8 +32,8 @@ export default function Plans() {
           <h2 style={{ fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 16 }}>
             Nuestros Planes
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 300, fontSize: '1rem' }}>
-            Elige el plan que mejor se adapte a tus necesidades
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 300, fontSize: '1rem', maxWidth: 680, margin: '0 auto' }}>
+            {plansSubtitle}
           </p>
         </motion.div>
 
