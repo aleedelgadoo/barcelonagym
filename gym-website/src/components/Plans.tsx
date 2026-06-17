@@ -32,7 +32,7 @@ export default function Plans() {
           <h2 style={{ fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 16 }}>
             Nuestros Planes
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 300, fontSize: '1rem', maxWidth: 680, margin: '0 auto' }}>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 400, fontSize: 'clamp(0.9rem, 1.4vw, 1.05rem)', maxWidth: 700, margin: '0 auto', lineHeight: 1.7, padding: '14px 24px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
             {plansSubtitle}
           </p>
         </motion.div>
@@ -122,16 +122,6 @@ export default function Plans() {
           })}
         </div>
 
-        <motion.p
-          className="text-center"
-          style={{ color: 'rgba(255,255,255,0.18)', fontSize: '0.75rem', fontWeight: 300, marginTop: 40, letterSpacing: '0.03em' }}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          💳 Cancela tu membresía en cualquier momento, sin preguntas
-        </motion.p>
 
       </div>
     </section>
