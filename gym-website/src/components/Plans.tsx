@@ -40,8 +40,6 @@ export default function Plans() {
         <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 24, marginTop: 56 }}>
           {plans.map((planType, i) => {
             const options = planType.options ?? []
-            const highlighted = options.find(o => o.highlighted)
-            const others = options.filter(o => !o.highlighted)
 
             return (
               <motion.div

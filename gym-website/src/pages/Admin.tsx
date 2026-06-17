@@ -5,7 +5,7 @@ import {
   saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, saveServices, savePortfolio, savePendingReviews, todayString, uploadImage, uploadWithProgress,
   DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS,
 } from '../lib/store'
-import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ActivitySchedule, ServiceItem, PortfolioItem, PendingReview } from '../lib/store'
+import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ServiceItem, PortfolioItem, PendingReview } from '../lib/store'
 
 const input: React.CSSProperties = {
   width: '100%',
