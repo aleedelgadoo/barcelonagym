@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import CarouselArrows from './CarouselArrows'
 import { getPendingReviews, savePendingReviews, uploadImage } from '../lib/store'
 import type { PendingReview } from '../lib/store'
 
@@ -141,22 +142,7 @@ export default function Reviews() {
             <div style={{ maxWidth: 680, margin: '0 auto' }}>
               {/* Flechas arriba */}
               {len > 1 && (
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
-                  {[
-                    { action: prev, path: 'M15 19l-7-7 7-7' },
-                    { action: next, path: 'M9 5l7 7-7 7' },
-                  ].map((btn, bi) => (
-                    <button key={bi} onClick={btn.action}
-                      style={{ width: 44, height: 44, borderRadius: '50%', background: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'opacity 0.2s' }}
-                      onMouseEnter={e => { e.currentTarget.style.opacity = '0.8' }}
-                      onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
-                    >
-                      <svg width={16} height={16} fill="none" stroke="#000" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={btn.path} />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
+                <CarouselArrows onPrev={prev} onNext={next} style={{ marginBottom: 20 }} />
               )}
 
               {/* Tarjeta */}

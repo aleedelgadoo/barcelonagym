@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import CarouselArrows from './CarouselArrows'
 
 export default function Differentials() {
   const { differentials } = useData()
@@ -34,6 +35,10 @@ export default function Differentials() {
           </p>
         </motion.div>
 
+        {differentials.length > 1 && (
+          <CarouselArrows onPrev={prev} onNext={next} style={{ marginBottom: 24 }} />
+        )}
+
         <motion.div
           style={{ maxWidth: 960, margin: '0 auto', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}
           initial={{ opacity: 0, y: 32 }}
@@ -56,15 +61,6 @@ export default function Differentials() {
             </AnimatePresence>
 
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 52%)' }} />
-
-            {differentials.length > 1 && [{ dir: 'prev', action: prev, path: 'M15 19l-7-7 7-7', pos: { left: 20 } }, { dir: 'next', action: next, path: 'M9 5l7 7-7 7', pos: { right: 20 } }].map(btn => (
-              <button key={btn.dir} onClick={btn.action}
-                style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', ...btn.pos, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}>
-                <svg width={16} height={16} fill="none" stroke="#fff" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={btn.path} />
-                </svg>
-              </button>
-            ))}
 
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '36px 40px' }}>
               <AnimatePresence mode="wait">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import CarouselArrows from './CarouselArrows'
 
 export default function News() {
   const { news, loaded } = useData()
@@ -37,6 +38,10 @@ export default function News() {
             <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.12)', borderTopColor: 'rgba(255,255,255,0.6)', animation: 'spin 0.8s linear infinite' }} />
           </div>
         ) : (
+        <>
+        {len > 1 && (
+          <CarouselArrows onPrev={prev} onNext={next} style={{ marginBottom: 28 }} />
+        )}
         <motion.div
           style={{ maxWidth: 760, margin: '0 auto' }}
           initial={{ opacity: 0, y: 32 }}
@@ -69,21 +74,12 @@ export default function News() {
             </motion.article>
           </AnimatePresence>
 
-          {/* Controles */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 40 }}>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {[{ action: prev, path: 'M15 19l-7-7 7-7' }, { action: next, path: 'M9 5l7 7-7 7' }].map((btn, i) => (
-                <button key={i} onClick={btn.action}
-                  style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                  <svg width={16} height={16} fill="none" stroke="#fff" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={btn.path} />
-                  </svg>
-                </button>
-              ))}
-            </div>
-            <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>{idx + 1} / {len}</p>
-          </div>
+          {/* Contador */}
+          {len > 1 && (
+            <p style={{ textAlign: 'center', fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', marginTop: 32 }}>{idx + 1} / {len}</p>
+          )}
         </motion.div>
+        </>
         )}
 
       </div>
