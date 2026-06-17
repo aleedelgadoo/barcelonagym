@@ -44,7 +44,7 @@ export default function Facilities() {
           viewport={{ once: true }}
         >
           {/* Imagen */}
-          <div style={{ position: 'relative', height: 'clamp(260px, 52vw, 480px)', background: '#000' }}>
+          <div style={{ position: 'relative', minHeight: 'clamp(260px, 52vw, 480px)', background: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
             <AnimatePresence mode="wait">
               <motion.img
                 key={current}
@@ -61,7 +61,7 @@ export default function Facilities() {
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 50%)' }} />
 
             {/* Info */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '36px 40px' }}>
+            <div style={{ position: 'relative', padding: 'clamp(24px, 5vw, 36px) clamp(22px, 5vw, 40px)' }}>
               <AnimatePresence mode="wait">
                 <motion.div key={current} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
                   <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginBottom: 8 }}>{current + 1} / {facilities.length}</p>

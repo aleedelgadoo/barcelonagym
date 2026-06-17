@@ -48,7 +48,7 @@ export default function Activities() {
         >
           {/* Imagen con overlay */}
           <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', marginBottom: 0 }}>
-            <div style={{ position: 'relative', height: 'clamp(260px, 48vw, 440px)', background: '#000' }}>
+            <div style={{ position: 'relative', minHeight: 'clamp(260px, 48vw, 440px)', background: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
               <AnimatePresence mode="wait">
                 <motion.img
                   key={idx}
@@ -65,7 +65,7 @@ export default function Activities() {
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 55%, transparent 100%)' }} />
 
               {/* Info sobre la imagen */}
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 'clamp(24px, 4vw, 40px)' }}>
+              <div style={{ position: 'relative', padding: 'clamp(24px, 5vw, 40px)' }}>
                 <AnimatePresence mode="wait">
                   <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
                     <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginBottom: 10 }}>
