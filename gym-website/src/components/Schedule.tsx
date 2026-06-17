@@ -25,25 +25,32 @@ export default function Schedule() {
 
         {/* Filas centradas */}
         <div style={{ maxWidth: 680, margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          {schedules.map((s, i) => (
-            <motion.div
-              key={s.id}
-              className="group flex items-center justify-between"
-              style={{ padding: '28px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', cursor: 'default' }}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut', delay: i * 0.08 }}
-              viewport={{ once: true }}
-            >
-              <span style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: 'rgba(255,255,255,0.45)', transition: 'color 0.4s' }}
-                className="group-hover:text-white/80">
-                {s.day}
-              </span>
-              <span style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>
-                {s.hours}
-              </span>
-            </motion.div>
-          ))}
+          {schedules.map((s, i) => {
+            const ranges = Array.isArray(s.hours) ? s.hours : [s.hours]
+            return (
+              <motion.div
+                key={s.id}
+                className="group flex items-center justify-between"
+                style={{ padding: '28px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', cursor: 'default', gap: 16 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut', delay: i * 0.08 }}
+                viewport={{ once: true }}
+              >
+                <span style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: 'rgba(255,255,255,0.45)', transition: 'color 0.4s' }}
+                  className="group-hover:text-white/80">
+                  {s.day}
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                  {ranges.map((r, ri) => (
+                    <span key={ri} style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>
+                      {r}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
 
         <motion.div
@@ -56,11 +63,11 @@ export default function Schedule() {
         >
           <button
             onClick={() => document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ fontSize: '0.8rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.35)', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 999, padding: '10px 22px', cursor: 'pointer', transition: 'all 0.25s' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+            style={{ fontSize: '0.85rem', letterSpacing: '0.04em', fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 999, padding: '13px 28px', cursor: 'pointer', transition: 'all 0.25s', boxShadow: '0 4px 20px rgba(255,255,255,0.15)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.85)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(255,255,255,0.25)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(255,255,255,0.15)' }}
           >
-            ¿Querés saber el horario de las actividades especiales? →
+            Horario actividades especiales →
           </button>
         </motion.div>
 

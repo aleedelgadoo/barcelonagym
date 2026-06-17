@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite, getActivities,
-  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, todayString, uploadImage,
-  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES,
+  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite, getActivities, getServices, getPortfolio, getPendingReviews,
+  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, saveServices, savePortfolio, savePendingReviews, todayString, uploadImage, uploadWithProgress,
+  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS,
 } from '../lib/store'
-import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ActivitySchedule } from '../lib/store'
+import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ActivitySchedule, ServiceItem, PortfolioItem, PendingReview } from '../lib/store'
 
 const input: React.CSSProperties = {
   width: '100%',
@@ -207,7 +207,7 @@ function AdminLogin({ onAuth }: { onAuth: () => void }) {
 }
 
 function AdminPanel() {
-  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'differentials' | 'plans' | 'schedule' | 'activities' | 'reviews' | 'faq'
+  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'services' | 'differentials' | 'plans' | 'schedule' | 'activities' | 'reviews' | 'faq' | 'portfolio'
   const [tab, setTab] = useState<Tab>('general')
   const [loading, setLoading]                   = useState(true)
   const [site, setSiteState]                    = useState<SiteInfo>       (DEFAULT_SITE)
@@ -220,6 +220,9 @@ function AdminPanel() {
   const [reviews, setReviewsState]              = useState<ReviewItem[]>  (DEFAULT_REVIEWS)
   const [faqs, setFaqsState]                    = useState<FAQItem[]>     (DEFAULT_FAQS)
   const [activities, setActivitiesState]        = useState<ActivityItem[]>(DEFAULT_ACTIVITIES)
+  const [services, setServicesState]            = useState<ServiceItem[]>   (DEFAULT_SERVICES)
+  const [portfolio, setPortfolioState]          = useState<PortfolioItem[]> (DEFAULT_PORTFOLIO)
+  const [pendingReviews, setPendingReviewsState] = useState<PendingReview[]>(DEFAULT_PENDING_REVIEWS)
   const [isDirty, setIsDirty]                   = useState(false)
   const [saved, setSaved]                       = useState(false)
   const [saveError, setSaveError]               = useState<string | null>(null)
@@ -228,8 +231,8 @@ function AdminPanel() {
   useEffect(() => {
     Promise.all([
       getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(),
-    ]).then(([s, c, n, f, d, p, sc, r, fq, act]) => {
+      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(), getServices(), getPortfolio(), getPendingReviews(),
+    ]).then(([s, c, n, f, d, p, sc, r, fq, act, svc, port, pending]) => {
       setSiteState(s)
       setContactState(c)
       setNewsState(n)
@@ -240,6 +243,9 @@ function AdminPanel() {
       setReviewsState(r)
       setFaqsState(fq)
       setActivitiesState(act)
+      setServicesState(svc)
+      setPortfolioState(port)
+      setPendingReviewsState(pending)
       setLoading(false)
     }).catch(err => {
       console.error('Error loading data:', err)
@@ -253,7 +259,7 @@ function AdminPanel() {
     const results = await Promise.all([
       saveSite(site), saveContact(contact), saveNews(news),
       saveDifferentials(differentials), saveFacilities(facilities),
-      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs), saveActivities(activities),
+      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs), saveActivities(activities), saveServices(services), savePortfolio(portfolio), savePendingReviews(pendingReviews),
     ])
     const err = results.find(r => r !== null) ?? null
     if (err) { setSaveError(err); return }
@@ -307,9 +313,12 @@ function AdminPanel() {
   const deletePlan = (id: number) => { setPlansState(prev => prev.filter(p => p.id !== id)); markDirty() }
 
   // Schedules
-  const addSchedule    = () => { setSchedulesState(prev => [...prev, { id: Date.now(), day: '', hours: '' }]); markDirty() }
-  const updateSchedule = (id: number, field: keyof ScheduleItem, value: string) => { setSchedulesState(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s)); markDirty() }
-  const deleteSchedule = (id: number) => { setSchedulesState(prev => prev.filter(s => s.id !== id)); markDirty() }
+  const addSchedule          = () => { setSchedulesState(prev => [...prev, { id: Date.now(), day: '', hours: [''] }]); markDirty() }
+  const updateScheduleDay    = (id: number, value: string) => { setSchedulesState(prev => prev.map(s => s.id === id ? { ...s, day: value } : s)); markDirty() }
+  const deleteSchedule       = (id: number) => { setSchedulesState(prev => prev.filter(s => s.id !== id)); markDirty() }
+  const addScheduleRange     = (id: number) => { setSchedulesState(prev => prev.map(s => s.id === id ? { ...s, hours: [...(Array.isArray(s.hours) ? s.hours : [s.hours as string]), ''] } : s)); markDirty() }
+  const updateScheduleRange  = (id: number, ri: number, value: string) => { setSchedulesState(prev => prev.map(s => s.id === id ? { ...s, hours: (Array.isArray(s.hours) ? s.hours : [s.hours as string]).map((h, j) => j === ri ? value : h) } : s)); markDirty() }
+  const deleteScheduleRange  = (id: number, ri: number) => { setSchedulesState(prev => prev.map(s => s.id === id ? { ...s, hours: (Array.isArray(s.hours) ? s.hours : [s.hours as string]).filter((_, j) => j !== ri) } : s)); markDirty() }
 
   // Reviews
   const addReview    = () => { setReviewsState(prev => [{ id: Date.now(), name: '', image: '', text: '' }, ...prev]); markDirty() }
@@ -325,11 +334,33 @@ function AdminPanel() {
   const addActivity    = () => { setActivitiesState(prev => [...prev, { id: Date.now(), name: '', description: '', image: '', schedules: [] }]); markDirty() }
   const updateActivity = (id: number, field: keyof Omit<ActivityItem, 'schedules'>, value: string) => { setActivitiesState(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a)); markDirty() }
   const deleteActivity = (id: number) => { setActivitiesState(prev => prev.filter(a => a.id !== id)); markDirty() }
-  const addActivitySchedule = (actId: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: [...a.schedules, { day: '', hours: '' }] } : a)); markDirty() }
-  const updateActivitySchedule = (actId: number, idx: number, field: keyof ActivitySchedule, value: string) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, [field]: value } : s) } : a)); markDirty() }
+  const addActivitySchedule = (actId: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: [...a.schedules, { day: '', hours: [''] }] } : a)); markDirty() }
+  const updateActivityScheduleDay = (actId: number, idx: number, value: string) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, day: value } : s) } : a)); markDirty() }
   const deleteActivitySchedule = (actId: number, idx: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.filter((_, i) => i !== idx) } : a)); markDirty() }
+  const addActivityScheduleRange = (actId: number, idx: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, hours: [...(Array.isArray(s.hours) ? s.hours : [s.hours as unknown as string]), ''] } : s) } : a)); markDirty() }
+  const updateActivityScheduleRange = (actId: number, idx: number, ri: number, value: string) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, hours: (Array.isArray(s.hours) ? s.hours : [s.hours as unknown as string]).map((h, j) => j === ri ? value : h) } : s) } : a)); markDirty() }
+  const deleteActivityScheduleRange = (actId: number, idx: number, ri: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, hours: (Array.isArray(s.hours) ? s.hours : [s.hours as unknown as string]).filter((_, j) => j !== ri) } : s) } : a)); markDirty() }
 
-  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', activities: 'Actividades', reviews: 'Testimonios', faq: 'Preguntas' }
+  // Services
+  const addService    = () => { setServicesState(prev => [...prev, { id: Date.now(), name: '', image: '' }]); markDirty() }
+  const updateService = (id: number, field: keyof ServiceItem, value: string) => { setServicesState(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s)); markDirty() }
+  const deleteService = (id: number) => { setServicesState(prev => prev.filter(s => s.id !== id)); markDirty() }
+
+  // Portfolio
+  const [uploadingFiles, setUploadingFiles] = useState<{ name: string; pct: number }[]>([])
+  const deletePortfolioItem = (id: number) => { setPortfolioState(prev => prev.filter(p => p.id !== id)); markDirty() }
+  const updatePortfolioCaption = (id: number, caption: string) => { setPortfolioState(prev => prev.map(p => p.id === id ? { ...p, caption } : p)); markDirty() }
+
+  // Pending reviews
+  const approveReview = (pr: PendingReview) => {
+    const newReview: ReviewItem = { id: Date.now(), name: pr.name, image: pr.image ?? '', text: pr.text }
+    setReviewsState(prev => [newReview, ...prev])
+    setPendingReviewsState(prev => prev.filter(p => p.id !== pr.id))
+    markDirty()
+  }
+  const rejectReview = (id: number) => { setPendingReviewsState(prev => prev.filter(p => p.id !== id)); markDirty() }
+
+  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', services: 'Servicios', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', activities: 'Actividades', reviews: 'Reseñas', faq: 'Preguntas', portfolio: 'Portfolio' }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'Inter, sans-serif', WebkitFontSmoothing: 'antialiased' }}>
@@ -353,10 +384,15 @@ function AdminPanel() {
       {/* Tabs */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 40px', display: 'flex', gap: 28, minWidth: 'max-content' }}>
-          {(['general', 'contact', 'news', 'facilities', 'differentials', 'plans', 'schedule', 'activities', 'reviews', 'faq'] as Tab[]).map(t => (
+          {(['general', 'contact', 'news', 'facilities', 'services', 'differentials', 'plans', 'schedule', 'activities', 'reviews', 'faq', 'portfolio'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
-              style={{ paddingBlock: 20, fontSize: 13, fontWeight: tab === t ? 500 : 400, color: tab === t ? '#fff' : 'rgba(255,255,255,0.28)', borderBottom: `1px solid ${tab === t ? '#fff' : 'transparent'}`, background: 'none', cursor: 'pointer', letterSpacing: '0.02em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
+              style={{ paddingBlock: 20, fontSize: 13, fontWeight: tab === t ? 500 : 400, color: (t === 'reviews' && pendingReviews.length > 0) ? '#fff' : tab === t ? '#fff' : 'rgba(255,255,255,0.28)', borderBottom: `1px solid ${tab === t ? '#fff' : 'transparent'}`, background: 'none', cursor: 'pointer', letterSpacing: '0.02em', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 7 }}>
               {tabLabels[t]}
+              {t === 'reviews' && pendingReviews.length > 0 && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 99, background: '#fff', color: '#000', fontSize: 10, fontWeight: 700, padding: '0 5px' }}>
+                  {pendingReviews.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -587,21 +623,61 @@ function AdminPanel() {
               <button onClick={addSchedule} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nuevo horario</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {schedules.map(s => (
-                <div key={s.id} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '18px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 12, alignItems: 'end' }}>
-                  <Field label="Día / Rango" value={s.day} onChange={v => updateSchedule(s.id, 'day', v)} />
-                  <Field label="Horario (ej: 6:00 — 22:00)" value={s.hours} onChange={v => updateSchedule(s.id, 'hours', v)} />
-                  <button onClick={() => deleteSchedule(s.id)} style={{ ...delBtn, marginTop: 0, alignSelf: 'flex-end' }}>Eliminar</button>
-                </div>
-              ))}
+              {schedules.map(s => {
+                const ranges = Array.isArray(s.hours) ? s.hours : [s.hours as string]
+                return (
+                  <div key={s.id} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '18px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+                      <div style={{ flex: 1 }}><Field label="Día / Rango" value={s.day} onChange={v => updateScheduleDay(s.id, v)} /></div>
+                      <button onClick={() => deleteSchedule(s.id)} style={{ ...delBtn, alignSelf: 'flex-end' }}>Eliminar</button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 4 }}>
+                      {ranges.map((r, ri) => (
+                        <div key={ri} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <div style={{ flex: 1 }}><Field label={`Horario${ranges.length > 1 ? ` ${ri + 1}` : ''} (ej: 6:00 — 22:00)`} value={r} onChange={v => updateScheduleRange(s.id, ri, v)} /></div>
+                          {ranges.length > 1 && <button onClick={() => deleteScheduleRange(s.id, ri)} style={{ ...delBtn, marginTop: 22 }}>×</button>}
+                        </div>
+                      ))}
+                      <button onClick={() => addScheduleRange(s.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 99, background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', alignSelf: 'flex-start', marginTop: 2 }}>+ rango horario</button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
 
         {!loading && tab === 'reviews' && (
           <div>
+            {/* Pendientes */}
+            {pendingReviews.length > 0 && (
+              <div style={{ marginBottom: 40 }}>
+                <p style={{ fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff', marginBottom: 16 }}>
+                  Pendientes de aprobación — {pendingReviews.length}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {pendingReviews.map(pr => (
+                    <div key={pr.id} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, padding: '18px 22px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                          {pr.image && <img src={pr.image} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />}
+                          <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 500 }}>{pr.name}</span>
+                          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.05em' }}>{pr.submittedAt}</span>
+                        </div>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: 300, lineHeight: 1.6 }}>"{pr.text}"</p>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                        <button onClick={() => approveReview(pr)} style={{ padding: '7px 16px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>Aprobar</button>
+                        <button onClick={() => rejectReview(pr.id)} style={delBtn}>Rechazar</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', marginTop: 32, marginBottom: 28 }} />
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{reviews.length} testimonios</p>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{reviews.length} reseñas</p>
               <button onClick={addReview} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nuevo testimonio</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -646,6 +722,106 @@ function AdminPanel() {
           </div>
         )}
 
+        {!loading && tab === 'portfolio' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{portfolio.length} elementos</p>
+              <label style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                + Subir foto / video
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  style={{ display: 'none' }}
+                  onChange={async e => {
+                    const files = Array.from(e.target.files ?? [])
+                    e.target.value = ''
+                    for (const file of files) {
+                      const entry = { name: file.name, pct: 0 }
+                      setUploadingFiles(prev => [...prev, entry])
+                      try {
+                        const url = await uploadWithProgress(file, pct => {
+                          setUploadingFiles(prev => prev.map(f => f.name === file.name ? { ...f, pct } : f))
+                        })
+                        const type: 'image' | 'video' = file.type.startsWith('video') ? 'video' : 'image'
+                        setPortfolioState(prev => [...prev, { id: Date.now() + Math.random(), type, url, caption: '' }])
+                        markDirty()
+                      } catch { /* ignore */ }
+                      setUploadingFiles(prev => prev.filter(f => f.name !== file.name))
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            {uploadingFiles.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 8 }}>
+                {uploadingFiles.map(f => (
+                  <div key={f.name} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '14px 18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{f.name}</span>
+                      <span style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500, flexShrink: 0 }}>{f.pct}%</span>
+                    </div>
+                    <div style={{ height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: '#fff', borderRadius: 99, width: `${f.pct}%`, transition: 'width 0.2s ease' }} />
+                    </div>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 6, letterSpacing: '0.05em' }}>
+                      {f.pct < 100 ? 'Subiendo...' : 'Procesando...'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+              {portfolio.map(item => (
+                <div key={item.id} style={{ background: 'rgba(255,255,255,0.025)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ position: 'relative', height: 140, background: '#000', overflow: 'hidden' }}>
+                    {item.type === 'video'
+                      ? <video src={item.url} muted preload="metadata" playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <img src={item.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    }
+                    {item.type === 'video' && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                        <svg width={28} height={28} fill="rgba(255,255,255,0.7)" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                    <Field label="Descripción (opcional)" value={item.caption} onChange={v => updatePortfolioCaption(item.id, v)} />
+                    <button onClick={() => deletePortfolioItem(item.id)} style={{ ...delBtn, marginTop: 0 }}>Eliminar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!loading && tab === 'services' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{services.length} servicios</p>
+              <button onClick={addService} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nuevo servicio</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {services.map(svc => (
+                <div key={svc.id} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                    {svc.image
+                      ? <img src={svc.image} alt={svc.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      : <span style={{ fontSize: 20, opacity: 0.2 }}>?</span>
+                    }
+                  </div>
+                  <div style={{ flex: 1 }}><Field label="Nombre" value={svc.name} onChange={v => updateService(svc.id, 'name', v)} /></div>
+                  <label style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer', fontSize: 11, color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
+                    PNG
+                    <input type="file" accept="image/png,image/svg+xml,image/webp" style={{ display: 'none' }} onChange={async e => { const f = e.target.files?.[0]; if (!f) return; const url = await uploadImage(f); updateService(svc.id, 'image', url) }} />
+                  </label>
+                  <button onClick={() => deleteService(svc.id)} style={delBtn}>Eliminar</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!loading && tab === 'activities' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
@@ -673,16 +849,29 @@ function AdminPanel() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                       <span style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.3)' }}>Horarios</span>
-                      <button onClick={() => addActivitySchedule(act.id)} style={{ fontSize: 11, padding: '5px 12px', borderRadius: 99, background: 'rgba(255,255,255,0.08)', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Horario</button>
+                      <button onClick={() => addActivitySchedule(act.id)} style={{ fontSize: 11, padding: '5px 12px', borderRadius: 99, background: 'rgba(255,255,255,0.08)', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Día</button>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {act.schedules.map((s, i) => (
-                        <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                          <div style={{ flex: 1 }}><Field label="Día" value={s.day} onChange={v => updateActivitySchedule(act.id, i, 'day', v)} /></div>
-                          <div style={{ flex: 1 }}><Field label="Horario" value={s.hours} onChange={v => updateActivitySchedule(act.id, i, 'hours', v)} /></div>
-                          <button onClick={() => deleteActivitySchedule(act.id, i)} style={{ ...delBtn, marginTop: 22 }}>×</button>
-                        </div>
-                      ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {act.schedules.map((s, i) => {
+                        const ranges = Array.isArray(s.hours) ? s.hours : [s.hours as unknown as string]
+                        return (
+                          <div key={i} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                              <div style={{ flex: 1 }}><Field label="Día" value={s.day} onChange={v => updateActivityScheduleDay(act.id, i, v)} /></div>
+                              <button onClick={() => deleteActivitySchedule(act.id, i)} style={{ ...delBtn, marginTop: 22 }}>×</button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 4 }}>
+                              {ranges.map((r, ri) => (
+                                <div key={ri} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                  <div style={{ flex: 1 }}><Field label={`Rango ${ri + 1}`} value={r} onChange={v => updateActivityScheduleRange(act.id, i, ri, v)} /></div>
+                                  {ranges.length > 1 && <button onClick={() => deleteActivityScheduleRange(act.id, i, ri)} style={{ ...delBtn, marginTop: 22 }}>×</button>}
+                                </div>
+                              ))}
+                              <button onClick={() => addActivityScheduleRange(act.id, i)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 99, background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', alignSelf: 'flex-start', marginTop: 2 }}>+ rango horario</button>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>

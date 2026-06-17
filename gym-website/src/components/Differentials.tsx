@@ -17,7 +17,7 @@ export default function Differentials() {
       <div style={{ maxWidth: 1400, margin: '0 auto', paddingInline: 'clamp(24px, 5vw, 80px)' }}>
 
         <motion.div
-          className="text-center" style={{ marginBottom: 'clamp(3rem, 10vw, 12rem)' }}
+          className="text-center" style={{ marginBottom: 'clamp(2rem, 3vw, 3.5rem)' }}
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeOut' }}
@@ -26,9 +26,12 @@ export default function Differentials() {
           <p style={{ fontSize: 10, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', marginBottom: 20 }}>
             Diferenciales
           </p>
-          <h2 style={{ fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.05 }}>
+          <h2 style={{ fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 20 }}>
             Tecnología, Comodidad y Resultados
           </h2>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 300, fontSize: 'clamp(0.88rem, 1.2vw, 1rem)', maxWidth: 620, margin: '0 auto', lineHeight: 1.75 }}>
+            Entrená con máquinas importadas de última generación, diseñadas para brindar mayor seguridad, confort y rendimiento en cada ejercicio. Nuestro equipamiento combina tecnología avanzada, ergonomía y materiales de alta calidad.
+          </p>
         </motion.div>
 
         <motion.div

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
 
 export default function Facilities() {
-  const { facilities } = useData()
+  const { facilities, services } = useData()
   const [current, setCurrent] = useState(0)
   const len = Math.max(1, facilities.length)
   const prev = () => setCurrent(i => (i === 0 ? len - 1 : i - 1))
@@ -87,6 +87,43 @@ export default function Facilities() {
             ))}
           </div>
         </motion.div>
+
+        {/* Subsección Servicios */}
+        {services.length > 0 && (
+          <motion.div
+            style={{ maxWidth: 960, margin: '64px auto 0' }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            viewport={{ once: true }}
+          >
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', marginBottom: 32, textAlign: 'center' }}>
+              Servicios
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'clamp(24px, 4vw, 48px)' }}>
+              {services.map((s, i) => (
+                <motion.div
+                  key={s.id}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, minWidth: 80 }}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, ease: 'easeOut', delay: i * 0.07 }}
+                  viewport={{ once: true }}
+                >
+                  <div style={{ width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {s.image
+                      ? <img src={s.image} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      : <div style={{ width: 48, height: 48, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }} />
+                    }
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.03em', textAlign: 'center' }}>
+                    {s.name}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
       </div>
     </section>

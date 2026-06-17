@@ -72,12 +72,18 @@ export interface PlanType {
 export interface ScheduleItem {
   id: number
   day: string
-  hours: string
+  hours: string | string[]
+}
+
+export interface ServiceItem {
+  id: number
+  name: string
+  image: string
 }
 
 export interface ActivitySchedule {
   day: string
-  hours: string
+  hours: string[]
 }
 
 export interface ActivityItem {
@@ -148,9 +154,9 @@ export const DEFAULT_SCHEDULES: ScheduleItem[] = [
 ]
 
 export const DEFAULT_ACTIVITIES: ActivityItem[] = [
-  { id: 1, name: 'Musculación', description: 'Entrenamiento de fuerza e hipertrofia con equipamiento de última generación. Ideal para ganar masa muscular y mejorar tu composición corporal.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: '6:00 — 22:00' }, { day: 'Sábado', hours: '8:00 — 20:00' }, { day: 'Domingo', hours: '8:00 — 18:00' }] },
-  { id: 2, name: 'Cardio', description: 'Zona equipada con cintas, bicicletas y elípticas de primer nivel para mejorar tu resistencia cardiovascular y quemar calorías de forma efectiva.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: '6:00 — 22:00' }, { day: 'Sábado', hours: '8:00 — 20:00' }] },
-  { id: 3, name: 'Clases Grupales', description: 'Clases dirigidas por instructores certificados para todos los niveles. Ambiente motivador, música y resultados garantizados en grupo.', image: 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=1400&q=85', schedules: [{ day: 'Lunes, Miércoles y Viernes', hours: '8:00 — 9:00' }, { day: 'Martes y Jueves', hours: '19:00 — 20:00' }, { day: 'Sábado', hours: '10:00 — 11:00' }] },
+  { id: 1, name: 'Musculación', description: 'Entrenamiento de fuerza e hipertrofia con equipamiento de última generación. Ideal para ganar masa muscular y mejorar tu composición corporal.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: ['6:00 — 22:00'] }, { day: 'Sábado', hours: ['8:00 — 20:00'] }, { day: 'Domingo', hours: ['8:00 — 18:00'] }] },
+  { id: 2, name: 'Cardio', description: 'Zona equipada con cintas, bicicletas y elípticas de primer nivel para mejorar tu resistencia cardiovascular y quemar calorías de forma efectiva.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: ['6:00 — 22:00'] }, { day: 'Sábado', hours: ['8:00 — 20:00'] }] },
+  { id: 3, name: 'Clases Grupales', description: 'Clases dirigidas por instructores certificados para todos los niveles. Ambiente motivador, música y resultados garantizados en grupo.', image: 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=1400&q=85', schedules: [{ day: 'Lunes, Miércoles y Viernes', hours: ['8:00 — 9:00', '21:00 — 22:00'] }, { day: 'Martes y Jueves', hours: ['19:00 — 20:00'] }, { day: 'Sábado', hours: ['10:00 — 11:00'] }] },
 ]
 
 export const DEFAULT_REVIEWS: ReviewItem[] = [
@@ -201,10 +207,31 @@ async function dbGetArray<T>(key: string, defaults: T[]): Promise<T[]> {
 export async function uploadImage(file: File): Promise<string> {
   const ext = file.name.split('.').pop() ?? 'jpg'
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const { error } = await supabase.storage.from('fotos').upload(path, file, { upsert: false })
+  const { error } = await supabase.storage.from('fotos').upload(path, file, { upsert: false, contentType: file.type })
   if (error) throw new Error(error.message)
   const { data } = supabase.storage.from('fotos').getPublicUrl(path)
   return data.publicUrl
+}
+
+export async function uploadWithProgress(file: File, onProgress: (pct: number) => void): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'bin'
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100)) }
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`Error ${xhr.status}`))
+    xhr.onerror = () => reject(new Error('Error de red'))
+    xhr.open('POST', `${supabaseUrl}/storage/v1/object/fotos/${path}`)
+    xhr.setRequestHeader('Authorization', `Bearer ${supabaseKey}`)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.setRequestHeader('x-upsert', 'false')
+    xhr.send(file)
+  })
+
+  return `${supabaseUrl}/storage/v1/object/public/fotos/${path}`
 }
 
 // ─── Site ────────────────────────────────────────────────────────────────────
@@ -242,11 +269,45 @@ export const saveSchedules = (d: ScheduleItem[])  => dbSet('bcngym_schedules', d
 export const getReviews  = () => dbGetArray<ReviewItem>  ('bcngym_reviews',    DEFAULT_REVIEWS)
 export const saveReviews = (d: ReviewItem[])  => dbSet('bcngym_reviews', d)
 
+export interface PendingReview {
+  id: number
+  name: string
+  text: string
+  image: string
+  submittedAt: string
+}
+
+export const DEFAULT_PENDING_REVIEWS: PendingReview[] = []
+export const getPendingReviews  = () => dbGetArray<PendingReview>('bcngym_pending_reviews', DEFAULT_PENDING_REVIEWS)
+export const savePendingReviews = (d: PendingReview[]) => dbSet('bcngym_pending_reviews', d)
+
 export const getFAQs       = () => dbGetArray<FAQItem>      ('bcngym_faqs',       DEFAULT_FAQS)
 export const saveFAQs      = (d: FAQItem[])      => dbSet('bcngym_faqs', d)
 
 export const getActivities  = () => dbGetArray<ActivityItem> ('bcngym_activities', DEFAULT_ACTIVITIES)
 export const saveActivities = (d: ActivityItem[]) => dbSet('bcngym_activities', d)
+
+export interface PortfolioItem {
+  id: number
+  type: 'image' | 'video'
+  url: string
+  caption: string
+}
+
+export const DEFAULT_PORTFOLIO: PortfolioItem[] = []
+
+export const getPortfolio  = () => dbGetArray<PortfolioItem>('bcngym_portfolio', DEFAULT_PORTFOLIO)
+export const savePortfolio = (d: PortfolioItem[]) => dbSet('bcngym_portfolio', d)
+
+export const DEFAULT_SERVICES: ServiceItem[] = [
+  { id: 1, name: 'Vestuario',        image: '' },
+  { id: 2, name: 'Lockers',          image: '' },
+  { id: 3, name: 'WiFi Gratuito',    image: '' },
+  { id: 4, name: 'Zona de Hidratación', image: '' },
+]
+
+export const getServices  = () => dbGetArray<ServiceItem> ('bcngym_services', DEFAULT_SERVICES)
+export const saveServices = (d: ServiceItem[]) => dbSet('bcngym_services', d)
 
 export function todayString(): string {
   const d = new Date()

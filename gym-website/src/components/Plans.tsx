@@ -3,11 +3,11 @@ import { useData } from '../lib/data-context'
 import { DEFAULT_SITE } from '../lib/store'
 
 function gridConfig(count: number): { maxWidth: number; columns: string } {
-  if (count === 1) return { maxWidth: 380,  columns: '1fr' }
-  if (count === 2) return { maxWidth: 640,  columns: 'repeat(auto-fit, minmax(min(260px,100%), 1fr))' }
-  if (count === 3) return { maxWidth: 1000, columns: 'repeat(auto-fit, minmax(min(280px,100%), 1fr))' }
-  if (count === 4) return { maxWidth: 1100, columns: 'repeat(auto-fit, minmax(min(250px,100%), 1fr))' }
-  return                  { maxWidth: 1100, columns: 'repeat(auto-fit, minmax(min(240px,100%), 1fr))' }
+  if (count === 1) return { maxWidth: 420,  columns: '1fr' }
+  if (count === 2) return { maxWidth: 760,  columns: 'repeat(2, 1fr)' }
+  if (count === 3) return { maxWidth: 1100, columns: 'repeat(3, 1fr)' }
+  if (count === 4) return { maxWidth: 1300, columns: 'repeat(auto-fit, minmax(min(290px,100%), 1fr))' }
+  return                  { maxWidth: 1300, columns: 'repeat(auto-fit, minmax(min(270px,100%), 1fr))' }
 }
 
 export default function Plans() {
@@ -37,7 +37,7 @@ export default function Plans() {
           </p>
         </motion.div>
 
-        <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 24 }}>
+        <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 24, marginTop: 56 }}>
           {plans.map((planType, i) => {
             const options = planType.options ?? []
             const highlighted = options.find(o => o.highlighted)
@@ -86,22 +86,22 @@ export default function Plans() {
                   {options.map(option => (
                     <div key={option.id} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '12px 16px', borderRadius: 10,
+                      padding: '12px 14px', borderRadius: 10, gap: 8,
                       ...(option.highlighted
                         ? { background: '#fff', border: '1px solid #fff' }
                         : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }),
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: option.highlighted ? 500 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.5)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: option.highlighted ? 500 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>
                           {option.duration}
                         </span>
                         {option.highlighted && (
-                          <span style={{ fontSize: 8, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, background: 'rgba(0,0,0,0.08)', color: '#000', padding: '2px 7px', borderRadius: 999 }}>
+                          <span style={{ fontSize: 7, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, background: 'rgba(0,0,0,0.08)', color: '#000', padding: '2px 6px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             Popular
                           </span>
                         )}
                       </div>
-                      <span style={{ fontSize: option.highlighted ? '1.05rem' : '0.95rem', fontWeight: option.highlighted ? 600 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.65)' }}>
+                      <span style={{ fontSize: option.highlighted ? '1rem' : '0.9rem', fontWeight: option.highlighted ? 600 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                         ${option.price}
                       </span>
                     </div>

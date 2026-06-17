@@ -14,11 +14,12 @@ import Activities from './components/Activities'
 import Divider from './components/Divider'
 import SideNav from './components/SideNav'
 import Admin from './pages/Admin'
+import Galeria from './pages/Galeria'
 
 function App() {
-  if (window.location.pathname === '/admin') {
-    return <Admin />
-  }
+  const path = window.location.pathname
+  if (path === '/admin') return <Admin />
+  if (path === '/galeria') return <Galeria />
 
   return (
     <DataProvider>
@@ -56,6 +57,45 @@ function App() {
           </a>
         </footer>
       </div>
+
+      {/* Botón flotante Galería */}
+      <a
+        href="/galeria"
+        title="Galería"
+        className="gallery-fab"
+        style={{
+          position: 'fixed',
+          top: 18,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 35,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          padding: '8px 16px',
+          borderRadius: 999,
+          background: 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.16)',
+          backdropFilter: 'blur(12px)',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          transition: 'all 0.25s',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+          whiteSpace: 'nowrap',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)' }}
+      >
+        <svg width={13} height={13} fill="none" stroke="#fff" viewBox="0 0 24 24" strokeWidth={1.8}>
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+        <span style={{ fontSize: '0.7rem', fontWeight: 500, letterSpacing: '0.06em', color: '#fff', textTransform: 'uppercase' }}>
+          Mirá nuestras fotos y videos
+        </span>
+      </a>
     </div>
     </DataProvider>
   )

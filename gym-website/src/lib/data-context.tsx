@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
   getSite, getContact, getNews, getFacilities, getDifferentials,
-  getPlans, getSchedules, getReviews, getFAQs, getActivities,
+  getPlans, getSchedules, getReviews, getFAQs, getActivities, getServices, getPortfolio, getPendingReviews,
   DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES,
-  DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES,
+  DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
+  DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS,
 } from './store'
 import type {
   SiteInfo, ContactInfo, NewsItem, FacilityItem, DifferentialItem,
-  PlanType, ScheduleItem, ReviewItem, FAQItem, ActivityItem,
+  PlanType, ScheduleItem, ReviewItem, FAQItem, ActivityItem, ServiceItem, PortfolioItem, PendingReview,
 } from './store'
 
 interface SiteData {
@@ -21,6 +22,9 @@ interface SiteData {
   reviews: ReviewItem[]
   faqs: FAQItem[]
   activities: ActivityItem[]
+  services: ServiceItem[]
+  portfolio: PortfolioItem[]
+  pendingReviews: PendingReview[]
 }
 
 const DataContext = createContext<SiteData>({
@@ -34,6 +38,9 @@ const DataContext = createContext<SiteData>({
   reviews: DEFAULT_REVIEWS,
   faqs: DEFAULT_FAQS,
   activities: DEFAULT_ACTIVITIES,
+  services: DEFAULT_SERVICES,
+  portfolio: DEFAULT_PORTFOLIO,
+  pendingReviews: DEFAULT_PENDING_REVIEWS,
 })
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
@@ -48,14 +55,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     reviews: DEFAULT_REVIEWS,
     faqs: DEFAULT_FAQS,
     activities: DEFAULT_ACTIVITIES,
+    services: DEFAULT_SERVICES,
+    portfolio: DEFAULT_PORTFOLIO,
+    pendingReviews: DEFAULT_PENDING_REVIEWS,
   })
 
   useEffect(() => {
     Promise.all([
       getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(),
-    ]).then(([site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities]) => {
-      setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities })
+      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(),
+      getActivities(), getServices(), getPortfolio(), getPendingReviews(),
+    ]).then(([site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews]) => {
+      setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews })
     }).catch(() => {})
   }, [])
 
