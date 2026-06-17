@@ -207,8 +207,13 @@ export const saveNews   = (d: NewsItem[])    => dbSet('bcngym_news', d)
 export const getFacilities  = () => dbGetArray<FacilityItem> ('bcngym_facilities',  DEFAULT_FACILITIES)
 export const saveFacilities = (d: FacilityItem[])  => dbSet('bcngym_facilities', d)
 
-export const getPlans    = () => dbGetArray<PlanItem>    ('bcngym_plans',      DEFAULT_PLANS)
-export const savePlans   = (d: PlanItem[])    => dbSet('bcngym_plans', d)
+export const getPlans = async (): Promise<PlanType[]> => {
+  const data = await dbGetArray<PlanType>('bcngym_plans', DEFAULT_PLANS)
+  // Si el dato guardado es el formato viejo (tiene 'price' directo), descartarlo
+  if (data.length > 0 && !('options' in (data[0] as object))) return DEFAULT_PLANS
+  return data
+}
+export const savePlans   = (d: PlanType[])    => dbSet('bcngym_plans', d)
 
 export const getSchedules  = () => dbGetArray<ScheduleItem> ('bcngym_schedules',  DEFAULT_SCHEDULES)
 export const saveSchedules = (d: ScheduleItem[])  => dbSet('bcngym_schedules', d)
