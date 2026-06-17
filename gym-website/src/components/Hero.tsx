@@ -10,16 +10,15 @@ export default function Hero() {
     <section className="relative min-h-screen overflow-hidden flex items-center justify-center" id="hero">
 
       {/* Imagen de fondo */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundColor: '#000',
-          backgroundImage: `url(${site.heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
+      <div className="absolute inset-0 z-0" style={{ backgroundColor: '#000' }}>
+        <img
+          src={site.heroBg}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="w-full h-full object-cover"
+          style={{ position: 'absolute', inset: 0 }}
+        />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.85) 100%)' }} />
       </div>
 

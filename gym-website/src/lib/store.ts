@@ -13,7 +13,7 @@ export interface SiteInfo {
 
 export const DEFAULT_SITE: SiteInfo = {
   logoSrc: '/logo.png',
-  heroBg: '/fondo.jpg',
+  heroBg: '/hero-bg.jpg',
   heroTitle: 'Una década\ncreciendo juntos',
   heroSubtitle: 'Cada historia que entra por nuestras puertas tiene un objetivo. Nos inspira ayudar a convertirlo en realidad.',
   locationPhoto: '/fotomapa.png',
