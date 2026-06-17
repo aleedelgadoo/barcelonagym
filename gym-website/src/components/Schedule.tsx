@@ -46,6 +46,24 @@ export default function Schedule() {
           ))}
         </div>
 
+        <motion.div
+          className="text-center"
+          style={{ marginTop: 48 }}
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <button
+            onClick={() => document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' })}
+            style={{ fontSize: '0.8rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.35)', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 999, padding: '10px 22px', cursor: 'pointer', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+          >
+            ¿Querés saber el horario de las actividades especiales? →
+          </button>
+        </motion.div>
+
       </div>
     </section>
   )

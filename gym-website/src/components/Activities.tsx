@@ -100,10 +100,10 @@ export default function Activities() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '0 clamp(24px, 4vw, 40px)', display: 'flex', flexWrap: 'wrap', gap: 0 }}
+                style={{ background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '0 clamp(24px, 4vw, 40px)', display: 'flex', flexDirection: 'column', gap: 0 }}
               >
                 {activity.schedules.map((s, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBlock: 18, flex: '1 1 260px', borderRight: i % 2 === 0 && i < activity.schedules.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none', paddingInline: i > 0 && i % 2 !== 0 ? 32 : 0 }}>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBlock: 14, borderBottom: i < activity.schedules.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                     <span style={{ fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.4)' }}>{s.day}</span>
                     <span style={{ fontSize: '0.9rem', fontWeight: 400, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{s.hours}</span>
                   </div>

@@ -6,6 +6,7 @@ const sections = [
   { id: 'news',          label: 'Novedades' },
   { id: 'schedule',      label: 'Horarios' },
   { id: 'facilities',    label: 'Instalaciones' },
+  { id: 'activities',    label: 'Actividades' },
   { id: 'plans',         label: 'Planes' },
   { id: 'differentials', label: 'Diferenciales' },
   { id: 'location',      label: 'Ubicación' },
