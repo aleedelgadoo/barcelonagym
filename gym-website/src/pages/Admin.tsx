@@ -243,6 +243,9 @@ export default function Admin() {
       setReviewsState(r)
       setFaqsState(fq)
       setLoading(false)
+    }).catch(err => {
+      console.error('Error loading data:', err)
+      setLoading(false)
     })
   }, [])
 

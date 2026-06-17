@@ -5,9 +5,10 @@ import { useData } from '../lib/data-context'
 export default function Differentials() {
   const { differentials } = useData()
   const [current, setCurrent] = useState(0)
-  const safeIndex = Math.min(current, differentials.length - 1)
-  const prev = () => setCurrent(i => (i === 0 ? differentials.length - 1 : i - 1))
-  const next = () => setCurrent(i => (i === differentials.length - 1 ? 0 : i + 1))
+  const len = Math.max(1, differentials.length)
+  const safeIndex = Math.min(current, len - 1)
+  const prev = () => setCurrent(i => (i === 0 ? len - 1 : i - 1))
+  const next = () => setCurrent(i => (i === len - 1 ? 0 : i + 1))
 
   if (differentials.length === 0) return null
 
@@ -55,7 +56,7 @@ export default function Differentials() {
 
             {differentials.length > 1 && [{ dir: 'prev', action: prev, path: 'M15 19l-7-7 7-7', pos: { left: 20 } }, { dir: 'next', action: next, path: 'M9 5l7 7-7 7', pos: { right: 20 } }].map(btn => (
               <button key={btn.dir} onClick={btn.action}
-                style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', ...btn.pos, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', ...btn.pos, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}>
                 <svg width={16} height={16} fill="none" stroke="#fff" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={btn.path} />
                 </svg>

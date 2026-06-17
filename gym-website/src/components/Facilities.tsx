@@ -5,8 +5,9 @@ import { useData } from '../lib/data-context'
 export default function Facilities() {
   const { facilities } = useData()
   const [current, setCurrent] = useState(0)
-  const prev = () => setCurrent(i => (i === 0 ? facilities.length - 1 : i - 1))
-  const next = () => setCurrent(i => (i === facilities.length - 1 ? 0 : i + 1))
+  const len = Math.max(1, facilities.length)
+  const prev = () => setCurrent(i => (i === 0 ? len - 1 : i - 1))
+  const next = () => setCurrent(i => (i === len - 1 ? 0 : i + 1))
 
   return (
     <section id="facilities" style={{ background: '#050505', paddingBlock: 'clamp(36px, 5vw, 68px)' }}>
@@ -56,7 +57,7 @@ export default function Facilities() {
             {/* Flechas */}
             {[{ dir: 'prev', action: prev, path: 'M15 19l-7-7 7-7', pos: { left: 20 } }, { dir: 'next', action: next, path: 'M9 5l7 7-7 7', pos: { right: 20 } }].map(btn => (
               <button key={btn.dir} onClick={btn.action}
-                style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', ...btn.pos, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.3s' }}>
+                style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', ...btn.pos, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.3s', zIndex: 10 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}>
                 <svg width={16} height={16} fill="none" stroke="#fff" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={btn.path} />
                 </svg>
