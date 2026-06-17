@@ -52,14 +52,19 @@ export interface FacilityItem {
   image: string
 }
 
-export interface PlanItem {
+export interface PlanOption {
+  id: number
+  duration: string
+  price: string
+  highlighted: boolean
+}
+
+export interface PlanType {
   id: number
   name: string
-  price: string
-  period: string
   description: string
-  highlighted: boolean
   features: string[]
+  options: PlanOption[]
 }
 
 export interface ScheduleItem {
@@ -103,10 +108,22 @@ export const DEFAULT_FACILITIES: FacilityItem[] = [
   { id: 6, name: 'Duchas y Vestuarios', description: 'Instalaciones modernas con todas las comodidades para tu higiene personal.', image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1400&q=85' },
 ]
 
-export const DEFAULT_PLANS: PlanItem[] = [
-  { id: 1, name: 'Plan Básico',  price: '29.99', period: '/mes', description: 'Perfecto para comenzar tu viaje fitness',     highlighted: false, features: ['Acceso a todas las áreas del gym', 'Horario: 6am - 10pm', 'Apoyo en línea', 'Acceso a app móvil'] },
-  { id: 2, name: 'Plan Premium', price: '49.99', period: '/mes', description: 'Lo más popular entre nuestros miembros',      highlighted: true,  features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (2 sesiones/mes)', 'Acceso a sauna', 'Agua y toallas incluidas', 'Acceso a app móvil'] },
-  { id: 3, name: 'Plan VIP',     price: '79.99', period: '/mes', description: 'Experiencia completa con máximos beneficios', highlighted: false, features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (8 sesiones/mes)', 'Acceso a sauna y spa', 'Nutricionista consultas', 'Ropa y accesorios gym', 'Prioridad en reservas', 'Acceso a app móvil premium'] },
+export const DEFAULT_PLANS: PlanType[] = [
+  { id: 1, name: 'Plan Básico', description: 'Perfecto para comenzar tu viaje fitness', features: ['Acceso a todas las áreas del gym', 'Horario: 6am - 10pm', 'Apoyo en línea', 'Acceso a app móvil'], options: [
+    { id: 101, duration: 'Mensual', price: '29.99', highlighted: true },
+    { id: 102, duration: 'Anual', price: '299.99', highlighted: false },
+    { id: 103, duration: '3 meses', price: '74.99', highlighted: false },
+  ]},
+  { id: 2, name: 'Plan Premium', description: 'Lo más popular entre nuestros miembros', features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (2 sesiones/mes)', 'Acceso a sauna', 'Agua y toallas incluidas', 'Acceso a app móvil'], options: [
+    { id: 201, duration: 'Mensual', price: '49.99', highlighted: true },
+    { id: 202, duration: 'Anual', price: '499.99', highlighted: false },
+    { id: 203, duration: '3 meses', price: '124.99', highlighted: false },
+  ]},
+  { id: 3, name: 'Plan VIP', description: 'Experiencia completa con máximos beneficios', features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (8 sesiones/mes)', 'Acceso a sauna y spa', 'Nutricionista consultas', 'Ropa y accesorios gym', 'Prioridad en reservas', 'Acceso a app móvil premium'], options: [
+    { id: 301, duration: 'Mensual', price: '79.99', highlighted: true },
+    { id: 302, duration: 'Anual', price: '799.99', highlighted: false },
+    { id: 303, duration: '3 meses', price: '199.99', highlighted: false },
+  ]},
 ]
 
 export const DEFAULT_SCHEDULES: ScheduleItem[] = [

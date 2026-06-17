@@ -7,7 +7,7 @@ import {
 } from './store'
 import type {
   SiteInfo, ContactInfo, NewsItem, FacilityItem, DifferentialItem,
-  PlanItem, ScheduleItem, ReviewItem, FAQItem,
+  PlanType, ScheduleItem, ReviewItem, FAQItem,
 } from './store'
 
 interface SiteData {
@@ -16,7 +16,7 @@ interface SiteData {
   news: NewsItem[]
   facilities: FacilityItem[]
   differentials: DifferentialItem[]
-  plans: PlanItem[]
+  plans: PlanType[]
   schedules: ScheduleItem[]
   reviews: ReviewItem[]
   faqs: FAQItem[]

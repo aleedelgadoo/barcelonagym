@@ -5,7 +5,7 @@ import {
   saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, todayString, uploadImage,
   DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
 } from '../lib/store'
-import type { NewsItem, FacilityItem, DifferentialItem, PlanItem, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo } from '../lib/store'
+import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo } from '../lib/store'
 
 const input: React.CSSProperties = {
   width: '100%',
@@ -219,7 +219,7 @@ export default function Admin() {
   const [news, setNewsState]                    = useState<NewsItem[]>     (DEFAULT_NEWS)
   const [facilities, setFacilitiesState]        = useState<FacilityItem[]>(DEFAULT_FACILITIES)
   const [differentials, setDifferentialsState]  = useState<DifferentialItem[]>(DEFAULT_DIFFERENTIALS)
-  const [plans, setPlansState]                  = useState<PlanItem[]>    (DEFAULT_PLANS)
+  const [plans, setPlansState]                  = useState<PlanType[]>    (DEFAULT_PLANS)
   const [schedules, setSchedulesState]          = useState<ScheduleItem[]>(DEFAULT_SCHEDULES)
   const [reviews, setReviewsState]              = useState<ReviewItem[]>  (DEFAULT_REVIEWS)
   const [faqs, setFaqsState]                    = useState<FAQItem[]>     (DEFAULT_FAQS)
@@ -286,8 +286,26 @@ export default function Admin() {
   const deleteFacility = (id: number) => { setFacilitiesState(prev => prev.filter(f => f.id !== id)); markDirty() }
 
   // Plans
-  const addPlan    = () => { setPlansState(prev => [...prev, { id: Date.now(), name: '', price: '', period: '/mes', description: '', highlighted: false, features: [] }]); markDirty() }
-  const updatePlan = (id: number, field: keyof PlanItem, value: string | boolean | string[]) => { setPlansState(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p)); markDirty() }
+  const addPlan = () => {
+    setPlansState(prev => [...prev, { id: Date.now(), name: '', description: '', features: [], options: [{ id: Date.now() + 1, duration: 'Mensual', price: '', highlighted: true }] }]);
+    markDirty()
+  }
+  const updatePlanType = (id: number, field: keyof Omit<PlanType, 'options'>, value: string | string[]) => {
+    setPlansState(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+    markDirty()
+  }
+  const addPlanOption = (planId: number) => {
+    setPlansState(prev => prev.map(p => p.id === planId ? { ...p, options: [...p.options, { id: Date.now(), duration: '', price: '', highlighted: false }] } : p))
+    markDirty()
+  }
+  const updatePlanOption = (planId: number, optionId: number, field: keyof PlanOption, value: string | boolean) => {
+    setPlansState(prev => prev.map(p => p.id === planId ? { ...p, options: p.options.map(o => o.id === optionId ? { ...o, [field]: value } : o) } : p))
+    markDirty()
+  }
+  const deletePlanOption = (planId: number, optionId: number) => {
+    setPlansState(prev => prev.map(p => p.id === planId ? { ...p, options: p.options.filter(o => o.id !== optionId) } : p))
+    markDirty()
+  }
   const deletePlan = (id: number) => { setPlansState(prev => prev.filter(p => p.id !== id)); markDirty() }
 
   // Schedules
@@ -497,43 +515,53 @@ export default function Admin() {
         {!loading && tab === 'plans' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{plans.length} plan{plans.length !== 1 ? 'es' : ''}</p>
-              <button onClick={addPlan} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nuevo plan</button>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{plans.length} tipo{plans.length !== 1 ? 's' : ''} de plan</p>
+              <button onClick={addPlan} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nuevo tipo de plan</button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {plans.map(plan => (
-                <div key={plan.id} style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${plan.highlighted ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 16, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {plans.map(planType => (
+                <div key={planType.id} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
-                      <Field label="Nombre del plan" value={plan.name} onChange={v => updatePlan(plan.id, 'name', v)} />
+                      <Field label="Nombre del tipo de plan" value={planType.name} onChange={v => updatePlanType(planType.id, 'name', v)} />
                     </div>
-                    <button onClick={() => deletePlan(plan.id)} style={delBtn}>Eliminar</button>
+                    <button onClick={() => deletePlan(planType.id)} style={delBtn}>Eliminar</button>
                   </div>
-                  <Field label="Descripción" value={plan.description} onChange={v => updatePlan(plan.id, 'description', v)} />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                    <Field label="Precio (sin $)" value={plan.price} onChange={v => updatePlan(plan.id, 'price', v)} />
-                    <Field label="Período (ej: /mes)" value={plan.period} onChange={v => updatePlan(plan.id, 'period', v)} />
-                  </div>
+                  <Field label="Descripción" value={planType.description} onChange={v => updatePlanType(planType.id, 'description', v)} />
                   <div>
                     <span style={label}>Características (una por línea)</span>
                     <textarea
-                      value={plan.features.join('\n')}
-                      onChange={e => updatePlan(plan.id, 'features', e.target.value.split('\n'))}
-                      style={{ ...input, resize: 'vertical', minHeight: 100, lineHeight: 1.6 }}
+                      value={planType.features.join('\n')}
+                      onChange={e => updatePlanType(planType.id, 'features', e.target.value.split('\n'))}
+                      style={{ ...input, resize: 'vertical', minHeight: 80, lineHeight: 1.6 }}
                       placeholder="Acceso 24/7&#10;Clases grupales&#10;Vestuarios"
                     />
                   </div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
-                    <div
-                      onClick={() => updatePlan(plan.id, 'highlighted', !plan.highlighted)}
-                      style={{ width: 36, height: 20, borderRadius: 99, background: plan.highlighted ? '#fff' : 'rgba(255,255,255,0.12)', transition: 'background 0.25s', position: 'relative', flexShrink: 0, cursor: 'pointer' }}
-                    >
-                      <div style={{ position: 'absolute', top: 2, left: plan.highlighted ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: plan.highlighted ? '#000' : 'rgba(255,255,255,0.5)', transition: 'left 0.25s' }} />
+
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <p style={{ fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>{planType.options.length} opción{planType.options.length !== 1 ? 'es' : ''}</p>
+                      <button onClick={() => addPlanOption(planType.id)} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontSize: 11, cursor: 'pointer' }}>+ Opción</button>
                     </div>
-                    <span style={{ fontSize: 12, color: plan.highlighted ? '#fff' : 'rgba(255,255,255,0.38)', letterSpacing: '0.05em' }}>
-                      {plan.highlighted ? 'Marcado como "Más popular"' : 'Marcar como "Más popular"'}
-                    </span>
-                  </label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {planType.options.map(option => (
+                        <div key={option.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr auto auto', gap: 10, alignItems: 'end' }}>
+                          <Field label="Duración" value={option.duration} onChange={v => updatePlanOption(planType.id, option.id, 'duration', v)} />
+                          <Field label="Precio (sin $)" value={option.price} onChange={v => updatePlanOption(planType.id, option.id, 'price', v)} />
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', marginTop: 22 }}>
+                            <div
+                              onClick={() => updatePlanOption(planType.id, option.id, 'highlighted', !option.highlighted)}
+                              style={{ width: 24, height: 14, borderRadius: 999, background: option.highlighted ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)', transition: 'background 0.25s', position: 'relative', flexShrink: 0, cursor: 'pointer' }}
+                            >
+                              <div style={{ position: 'absolute', top: 1, left: option.highlighted ? 11 : 1, width: 12, height: 12, borderRadius: '50%', background: '#fff', transition: 'left 0.25s' }} />
+                            </div>
+                            <span style={{ fontSize: 9, color: option.highlighted ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Popular</span>
+                          </label>
+                          <button onClick={() => deletePlanOption(planType.id, option.id)} style={{ ...delBtn, marginTop: 22, padding: '6px 10px', fontSize: 11 }}>-</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

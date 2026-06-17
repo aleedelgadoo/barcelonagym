@@ -4,9 +4,9 @@ import { useData } from '../lib/data-context'
 function gridConfig(count: number): { maxWidth: number; columns: string } {
   if (count === 1) return { maxWidth: 380,  columns: '1fr' }
   if (count === 2) return { maxWidth: 640,  columns: 'repeat(auto-fit, minmax(min(260px,100%), 1fr))' }
-  if (count === 3) return { maxWidth: 960,  columns: 'repeat(auto-fit, minmax(min(240px,100%), 1fr))' }
-  if (count === 4) return { maxWidth: 680,  columns: 'repeat(auto-fit, minmax(min(260px,100%), 1fr))' }
-  return                  { maxWidth: 960,  columns: 'repeat(auto-fit, minmax(min(240px,100%), 1fr))' }
+  if (count === 3) return { maxWidth: 1000, columns: 'repeat(auto-fit, minmax(min(280px,100%), 1fr))' }
+  if (count === 4) return { maxWidth: 1100, columns: 'repeat(auto-fit, minmax(min(250px,100%), 1fr))' }
+  return                  { maxWidth: 1100, columns: 'repeat(auto-fit, minmax(min(240px,100%), 1fr))' }
 }
 
 export default function Plans() {
@@ -35,53 +35,88 @@ export default function Plans() {
           </p>
         </motion.div>
 
-        <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 16 }}>
-          {plans.map((plan, i) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: 'easeOut', delay: i * 0.08 }}
-              viewport={{ once: true }}
-              style={{
-                borderRadius: 20,
-                padding: '40px 32px',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                ...(plan.highlighted
-                  ? { background: '#fff', border: '1px solid #fff' }
-                  : { background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)' }),
-              }}
-            >
-              {plan.highlighted && (
-                <span style={{ position: 'absolute', top: 20, right: 20, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, background: '#000', color: '#fff', padding: '4px 10px', borderRadius: 999 }}>
-                  Más popular
-                </span>
-              )}
+        <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 24 }}>
+          {plans.map((planType, i) => {
+            const highlighted = planType.options.find(o => o.highlighted)
+            const others = planType.options.filter(o => !o.highlighted)
 
-              <div style={{ marginBottom: 28 }}>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 6, color: plan.highlighted ? '#000' : '#fff' }}>{plan.name}</h3>
-                <p style={{ fontSize: '0.83rem', fontWeight: 300, color: plan.highlighted ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.38)' }}>{plan.description}</p>
-              </div>
+            return (
+              <motion.div
+                key={planType.id}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: 'easeOut', delay: i * 0.08 }}
+                viewport={{ once: true }}
+                style={{
+                  borderRadius: 20,
+                  padding: '40px 32px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: 'rgba(255,255,255,0.025)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                }}
+              >
+                {/* Nombre y descripción */}
+                <div style={{ marginBottom: 32 }}>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 8, color: '#fff' }}>
+                    {planType.name}
+                  </h3>
+                  <p style={{ fontSize: '0.83rem', fontWeight: 300, color: 'rgba(255,255,255,0.38)' }}>
+                    {planType.description}
+                  </p>
+                </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
-                <span style={{ fontSize: 'clamp(2.5rem, 4vw, 3rem)', fontWeight: 300, letterSpacing: '-0.04em', color: plan.highlighted ? '#000' : '#fff' }}>${plan.price}</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 300, color: plan.highlighted ? 'rgba(0,0,0,0.38)' : 'rgba(255,255,255,0.28)' }}>{plan.period}</span>
-              </div>
+                {/* Plan destacado */}
+                {highlighted && (
+                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '24px', marginBottom: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 20 }}>
+                      <span style={{ fontSize: '2.2rem', fontWeight: 300, letterSpacing: '-0.04em', color: '#fff' }}>
+                        ${highlighted.price}
+                      </span>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 300, color: 'rgba(255,255,255,0.35)' }}>
+                        {highlighted.duration}
+                      </span>
+                      <span style={{ fontSize: 8, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '3px 8px', borderRadius: 999, marginLeft: 'auto' }}>
+                        Popular
+                      </span>
+                    </div>
 
-              <ul style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {plan.features.map((f, j) => (
-                  <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <svg style={{ width: 14, height: 14, marginTop: 3, flexShrink: 0, color: plan.highlighted ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.28)' }} fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span style={{ fontSize: '0.83rem', fontWeight: 300, lineHeight: 1.55, color: plan.highlighted ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.45)' }}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+                    <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {planType.features.map((f, j) => (
+                        <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                          <svg style={{ width: 14, height: 14, marginTop: 2, flexShrink: 0, color: 'rgba(255,255,255,0.28)' }} fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 300, lineHeight: 1.4, color: 'rgba(255,255,255,0.45)' }}>
+                            {f}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Otros planes */}
+                {others.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto' }}>
+                    <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 8 }}>
+                      Otros planes
+                    </p>
+                    {others.map(option => (
+                      <div key={option.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBlock: 10, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.45)' }}>
+                          {option.duration}
+                        </span>
+                        <span style={{ fontSize: '0.95rem', fontWeight: 300, color: 'rgba(255,255,255,0.7)' }}>
+                          ${option.price}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )
+          })}
         </div>
 
         <motion.p
