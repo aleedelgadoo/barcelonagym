@@ -37,13 +37,13 @@ export default function Schedule() {
                 transition={{ duration: 0.8, ease: 'easeOut', delay: i * 0.08 }}
                 viewport={{ once: true }}
               >
-                <span style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: 'rgba(255,255,255,0.45)', transition: 'color 0.4s' }}
+                <span style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: 'rgba(255,255,255,0.45)', transition: 'color 0.4s', minWidth: 0 }}
                   className="group-hover:text-white/80">
                   {s.day}
                 </span>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                   {ranges.map((r, ri) => (
-                    <span key={ri} style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>
+                    <span key={ri} style={{ fontSize: 'clamp(1.1rem, 1.8vw, 1.35rem)', fontWeight: 300, color: '#fff', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                       {r}
                     </span>
                   ))}

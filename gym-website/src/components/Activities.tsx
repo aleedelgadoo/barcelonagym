@@ -96,10 +96,10 @@ export default function Activities() {
                   const ranges = Array.isArray(s.hours) ? s.hours : [s.hours as unknown as string]
                   return (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBlock: 14, borderBottom: i < activity.schedules.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', gap: 16 }}>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>{s.day}</span>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.4)', minWidth: 0 }}>{s.day}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                         {ranges.map((r, j) => (
-                          <span key={j} style={{ fontSize: '0.9rem', fontWeight: 400, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{r}</span>
+                          <span key={j} style={{ fontSize: '0.9rem', fontWeight: 400, color: '#fff', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{r}</span>
                         ))}
                       </div>
                     </div>
