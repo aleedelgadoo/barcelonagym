@@ -20,8 +20,10 @@ import Rutina from './pages/Rutina'
 function App() {
   const path = window.location.pathname
   if (path === '/admin') return <Admin />
-  if (path === '/galeria') return <Galeria />
-  if (path === '/rutina') return <Rutina />
+  // Rutas nuevas (las viejas /galeria y /rutina quedaron con un 308 cacheado en
+  // Chrome, así que usamos URLs frescas). Se mantienen las viejas por compatibilidad.
+  if (path === '/fotos' || path === '/galeria') return <Galeria />
+  if (path === '/plantilla' || path === '/rutina') return <Rutina />
 
   return (
     <DataProvider>
@@ -62,7 +64,7 @@ function App() {
 
       {/* Botón flotante Galería */}
       <a
-        href="/galeria"
+        href="/fotos"
         title="Galería"
         className="gallery-fab"
         style={{

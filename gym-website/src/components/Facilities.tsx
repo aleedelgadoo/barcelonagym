@@ -102,7 +102,7 @@ export default function Facilities() {
             Sí. Cada miembro recibe una plantilla de entrenamiento diseñada por nuestros instructores, adaptada a tu nivel y objetivos.
           </p>
           <a
-            href="/rutina"
+            href="/plantilla"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 22px', borderRadius: 999, background: '#fff', color: '#000', fontSize: '0.82rem', fontWeight: 600, letterSpacing: '0.04em', textDecoration: 'none', transition: 'opacity 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
