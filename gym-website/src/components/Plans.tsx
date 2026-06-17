@@ -98,11 +98,6 @@ export default function Plans() {
                         <span style={{ fontSize: '0.82rem', fontWeight: option.highlighted ? 500 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>
                           {option.duration}
                         </span>
-                        {option.highlighted && (
-                          <span style={{ fontSize: 7, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, background: 'rgba(0,0,0,0.08)', color: '#000', padding: '2px 6px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            Popular
-                          </span>
-                        )}
                       </div>
                       <span style={{ fontSize: option.highlighted ? '1rem' : '0.9rem', fontWeight: option.highlighted ? 600 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                         ${option.price}
