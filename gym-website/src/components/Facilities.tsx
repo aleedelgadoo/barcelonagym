@@ -88,6 +88,34 @@ export default function Facilities() {
           </div>
         </motion.div>
 
+        {/* Subsección Rutina */}
+        <motion.div
+          style={{ maxWidth: 960, margin: '64px auto 0', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 'clamp(28px, 4vw, 44px)', display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: 'easeOut' }}
+          viewport={{ once: true }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width={16} height={16} fill="none" stroke="#fff" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+            </div>
+            <h3 style={{ fontSize: 'clamp(1rem, 1.8vw, 1.2rem)', fontWeight: 600, color: '#fff', letterSpacing: '-0.01em' }}>¿Me van a brindar una rutina de entrenamiento?</h3>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 300, fontSize: '0.9rem', lineHeight: 1.7 }}>
+            Sí. Cada miembro recibe una plantilla de entrenamiento diseñada por nuestros instructores, adaptada a tu nivel y objetivos.
+          </p>
+          <a
+            href="/rutina"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 22px', borderRadius: 999, background: '#fff', color: '#000', fontSize: '0.82rem', fontWeight: 600, letterSpacing: '0.04em', textDecoration: 'none', transition: 'opacity 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+          >
+            Visualizá nuestra plantilla
+            <svg width={13} height={13} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+          </a>
+        </motion.div>
+
         {/* Subsección Servicios */}
         {services.length > 0 && (
           <motion.div

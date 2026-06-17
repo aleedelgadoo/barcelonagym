@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite, getActivities, getServices, getPortfolio, getPendingReviews,
-  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, saveServices, savePortfolio, savePendingReviews, todayString, uploadImage, uploadWithProgress,
-  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS,
+  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite, getActivities, getServices, getPortfolio, getPendingReviews, getRoutineImages,
+  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, saveServices, savePortfolio, savePendingReviews, saveRoutineImages, todayString, uploadImage, uploadWithProgress,
+  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS, DEFAULT_ROUTINE,
 } from '../lib/store'
-import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ServiceItem, PortfolioItem, PendingReview } from '../lib/store'
+import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ServiceItem, PortfolioItem, PendingReview, RoutineImage } from '../lib/store'
 
 const input: React.CSSProperties = {
   width: '100%',
@@ -207,7 +207,7 @@ function AdminLogin({ onAuth }: { onAuth: () => void }) {
 }
 
 function AdminPanel() {
-  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'services' | 'differentials' | 'plans' | 'schedule' | 'activities' | 'reviews' | 'faq' | 'portfolio'
+  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'services' | 'differentials' | 'plans' | 'schedule' | 'activities' | 'reviews' | 'faq' | 'portfolio' | 'routine'
   const [tab, setTab] = useState<Tab>('general')
   const [loading, setLoading]                   = useState(true)
   const [site, setSiteState]                    = useState<SiteInfo>       (DEFAULT_SITE)
@@ -223,6 +223,7 @@ function AdminPanel() {
   const [services, setServicesState]            = useState<ServiceItem[]>   (DEFAULT_SERVICES)
   const [portfolio, setPortfolioState]          = useState<PortfolioItem[]> (DEFAULT_PORTFOLIO)
   const [pendingReviews, setPendingReviewsState] = useState<PendingReview[]>(DEFAULT_PENDING_REVIEWS)
+  const [routine, setRoutineState]              = useState<RoutineImage[]>  (DEFAULT_ROUTINE)
   const [isDirty, setIsDirty]                   = useState(false)
   const [saved, setSaved]                       = useState(false)
   const [saveError, setSaveError]               = useState<string | null>(null)
@@ -231,8 +232,8 @@ function AdminPanel() {
   useEffect(() => {
     Promise.all([
       getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(), getServices(), getPortfolio(), getPendingReviews(),
-    ]).then(([s, c, n, f, d, p, sc, r, fq, act, svc, port, pending]) => {
+      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(), getServices(), getPortfolio(), getPendingReviews(), getRoutineImages(),
+    ]).then(([s, c, n, f, d, p, sc, r, fq, act, svc, port, pending, rout]) => {
       setSiteState(s)
       setContactState(c)
       setNewsState(n)
@@ -246,6 +247,7 @@ function AdminPanel() {
       setServicesState(svc)
       setPortfolioState(port)
       setPendingReviewsState(pending)
+      setRoutineState(rout)
       setLoading(false)
     }).catch(err => {
       console.error('Error loading data:', err)
@@ -259,7 +261,7 @@ function AdminPanel() {
     const results = await Promise.all([
       saveSite(site), saveContact(contact), saveNews(news),
       saveDifferentials(differentials), saveFacilities(facilities),
-      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs), saveActivities(activities), saveServices(services), savePortfolio(portfolio), savePendingReviews(pendingReviews),
+      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs), saveActivities(activities), saveServices(services), savePortfolio(portfolio), savePendingReviews(pendingReviews), saveRoutineImages(routine),
     ])
     const err = results.find(r => r !== null) ?? null
     if (err) { setSaveError(err); return }
@@ -360,7 +362,7 @@ function AdminPanel() {
   }
   const rejectReview = (id: number) => { setPendingReviewsState(prev => prev.filter(p => p.id !== id)); markDirty() }
 
-  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', services: 'Servicios', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', activities: 'Actividades', reviews: 'Reseñas', faq: 'Preguntas', portfolio: 'Portfolio' }
+  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', services: 'Servicios', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', activities: 'Actividades', reviews: 'Reseñas', faq: 'Preguntas', portfolio: 'Portfolio', routine: 'Rutina' }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'Inter, sans-serif', WebkitFontSmoothing: 'antialiased' }}>
@@ -384,7 +386,7 @@ function AdminPanel() {
       {/* Tabs */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 40px', display: 'flex', gap: 28, minWidth: 'max-content' }}>
-          {(['general', 'contact', 'news', 'facilities', 'services', 'differentials', 'plans', 'schedule', 'activities', 'reviews', 'faq', 'portfolio'] as Tab[]).map(t => (
+          {(['general', 'contact', 'news', 'facilities', 'services', 'differentials', 'plans', 'schedule', 'activities', 'reviews', 'faq', 'portfolio', 'routine'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               style={{ paddingBlock: 20, fontSize: 13, fontWeight: tab === t ? 500 : 400, color: (t === 'reviews' && pendingReviews.length > 0) ? '#fff' : tab === t ? '#fff' : 'rgba(255,255,255,0.28)', borderBottom: `1px solid ${tab === t ? '#fff' : 'transparent'}`, background: 'none', cursor: 'pointer', letterSpacing: '0.02em', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 7 }}>
               {tabLabels[t]}
@@ -896,6 +898,37 @@ function AdminPanel() {
           </motion.div>
         )}
       </AnimatePresence>
+
+        {!loading && tab === 'routine' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{routine.length} fotos</p>
+              <label style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                + Subir foto
+                <input type="file" accept="image/*" multiple style={{ display: 'none' }}
+                  onChange={async e => {
+                    const files = Array.from(e.target.files ?? [])
+                    e.target.value = ''
+                    for (const file of files) {
+                      const url = await uploadImage(file)
+                      setRoutineState(prev => [...prev, { id: Date.now() + Math.random(), url }])
+                      markDirty()
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+              {routine.map(item => (
+                <div key={item.id} style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', background: '#111', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <img src={item.url} alt="" style={{ width: '100%', display: 'block', aspectRatio: '4/5', objectFit: 'cover' }} />
+                  <button onClick={() => { setRoutineState(prev => prev.filter(r => r.id !== item.id)); markDirty() }}
+                    style={{ position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       {/* Floating Save Button */}
       <AnimatePresence>

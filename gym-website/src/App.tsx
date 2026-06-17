@@ -15,11 +15,13 @@ import Divider from './components/Divider'
 import SideNav from './components/SideNav'
 import Admin from './pages/Admin'
 import Galeria from './pages/Galeria'
+import Rutina from './pages/Rutina'
 
 function App() {
   const path = window.location.pathname
   if (path === '/admin') return <Admin />
   if (path === '/galeria') return <Galeria />
+  if (path === '/rutina') return <Rutina />
 
   return (
     <DataProvider>

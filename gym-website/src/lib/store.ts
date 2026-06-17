@@ -309,6 +309,15 @@ export const DEFAULT_SERVICES: ServiceItem[] = [
 export const getServices  = () => dbGetArray<ServiceItem> ('bcngym_services', DEFAULT_SERVICES)
 export const saveServices = (d: ServiceItem[]) => dbSet('bcngym_services', d)
 
+export interface RoutineImage {
+  id: number
+  url: string
+}
+
+export const DEFAULT_ROUTINE: RoutineImage[] = []
+export const getRoutineImages  = () => dbGetArray<RoutineImage>('bcngym_routine', DEFAULT_ROUTINE)
+export const saveRoutineImages = (d: RoutineImage[]) => dbSet('bcngym_routine', d)
+
 export function todayString(): string {
   const d = new Date()
   const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
