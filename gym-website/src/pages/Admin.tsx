@@ -206,11 +206,7 @@ function AdminLogin({ onAuth }: { onAuth: () => void }) {
   )
 }
 
-export default function Admin() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem('bcngym_auth') === '1')
-
-  if (!authed) return <AdminLogin onAuth={() => setAuthed(true)} />
-
+function AdminPanel() {
   type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'differentials' | 'plans' | 'schedule' | 'reviews' | 'faq'
   const [tab, setTab] = useState<Tab>('general')
   const [loading, setLoading]                   = useState(true)
@@ -678,4 +674,10 @@ export default function Admin() {
 
     </div>
   )
+}
+
+export default function Admin() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('bcngym_auth') === '1')
+  if (!authed) return <AdminLogin onAuth={() => setAuthed(true)} />
+  return <AdminPanel />
 }
