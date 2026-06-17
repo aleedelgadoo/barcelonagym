@@ -229,30 +229,40 @@ function AdminPanel() {
   const [saveError, setSaveError]               = useState<string | null>(null)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const [loadError, setLoadError] = useState(false)
+
   useEffect(() => {
-    Promise.all([
-      getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(), getServices(), getPortfolio(), getPendingReviews(), getRoutineImages(),
-    ]).then(([s, c, n, f, d, p, sc, r, fq, act, svc, port, pending, rout]) => {
-      setSiteState(s)
-      setContactState(c)
-      setNewsState(n)
-      setFacilitiesState(f)
-      setDifferentialsState(d)
-      setPlansState(p)
-      setSchedulesState(sc)
-      setReviewsState(r)
-      setFaqsState(fq)
-      setActivitiesState(act)
-      setServicesState(svc)
-      setPortfolioState(port)
-      setPendingReviewsState(pending)
-      setRoutineState(rout)
-      setLoading(false)
-    }).catch(err => {
-      console.error('Error loading data:', err)
-      setLoading(false)
-    })
+    let cancelled = false
+    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+    async function load() {
+      // Reintenta ante errores de red. NO baja `loading` si nunca carga, para
+      // evitar que el panel muestre valores por defecto y el dueño los guarde
+      // encima de los datos reales.
+      for (let attempt = 0; attempt < 6; attempt++) {
+        try {
+          const [s, c, n, f, d, p, sc, r, fq, act, svc, port, pending, rout] = await Promise.all([
+            getSite(), getContact(), getNews(), getFacilities(),
+            getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(), getServices(), getPortfolio(), getPendingReviews(), getRoutineImages(),
+          ])
+          if (cancelled) return
+          setSiteState(s); setContactState(c); setNewsState(n); setFacilitiesState(f)
+          setDifferentialsState(d); setPlansState(p); setSchedulesState(sc); setReviewsState(r)
+          setFaqsState(fq); setActivitiesState(act); setServicesState(svc); setPortfolioState(port)
+          setPendingReviewsState(pending); setRoutineState(rout)
+          setLoadError(false); setLoading(false)
+          return
+        } catch (err) {
+          if (cancelled) return
+          console.error('Error loading data (intento ' + (attempt + 1) + '):', err)
+          setLoadError(true)
+          await sleep(1000 * (attempt + 1))
+        }
+      }
+    }
+
+    load()
+    return () => { cancelled = true }
   }, [])
 
   const markDirty = () => { setIsDirty(true); setSaved(false); setSaveError(null) }
@@ -405,7 +415,7 @@ function AdminPanel() {
 
         {loading && (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'rgba(255,255,255,0.25)', fontSize: 13, letterSpacing: '0.1em' }}>
-            Cargando datos…
+            {loadError ? 'Error de conexión, reintentando…' : 'Cargando datos…'}
           </div>
         )}
 

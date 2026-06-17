@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import {
   getSite, getContact, getNews, getFacilities, getDifferentials,
   getPlans, getSchedules, getReviews, getFAQs, getActivities, getServices, getPortfolio, getPendingReviews, getRoutineImages,
-  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES,
-  DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
+  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_FACILITIES,
+  DEFAULT_DIFFERENTIALS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
   DEFAULT_ACTIVITIES, DEFAULT_SERVICES, DEFAULT_PORTFOLIO, DEFAULT_PENDING_REVIEWS, DEFAULT_ROUTINE,
 } from './store'
 import type {
@@ -26,15 +26,21 @@ interface SiteData {
   portfolio: PortfolioItem[]
   pendingReviews: PendingReview[]
   routineImages: RoutineImage[]
+  /** false hasta que los datos reales de Supabase terminan de cargar */
+  loaded: boolean
 }
 
-const DataContext = createContext<SiteData>({
+// Estado inicial: los datos que el usuario edita (planes, novedades) arrancan
+// VACÍOS para que nunca se muestren los valores por defecto del código (ej.
+// "Plan VIP") mientras carga o si la carga falla. El resto mantiene defaults
+// porque algunos componentes asumen que no están vacíos.
+const INITIAL: SiteData = {
   site: DEFAULT_SITE,
   contact: DEFAULT_CONTACT,
-  news: DEFAULT_NEWS,
+  news: [],
   facilities: DEFAULT_FACILITIES,
   differentials: DEFAULT_DIFFERENTIALS,
-  plans: DEFAULT_PLANS,
+  plans: [],
   schedules: DEFAULT_SCHEDULES,
   reviews: DEFAULT_REVIEWS,
   faqs: DEFAULT_FAQS,
@@ -43,34 +49,41 @@ const DataContext = createContext<SiteData>({
   portfolio: DEFAULT_PORTFOLIO,
   pendingReviews: DEFAULT_PENDING_REVIEWS,
   routineImages: DEFAULT_ROUTINE,
-})
+  loaded: false,
+}
+
+const DataContext = createContext<SiteData>(INITIAL)
+
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<SiteData>({
-    site: DEFAULT_SITE,
-    contact: DEFAULT_CONTACT,
-    news: DEFAULT_NEWS,
-    facilities: DEFAULT_FACILITIES,
-    differentials: DEFAULT_DIFFERENTIALS,
-    plans: DEFAULT_PLANS,
-    schedules: DEFAULT_SCHEDULES,
-    reviews: DEFAULT_REVIEWS,
-    faqs: DEFAULT_FAQS,
-    activities: DEFAULT_ACTIVITIES,
-    services: DEFAULT_SERVICES,
-    portfolio: DEFAULT_PORTFOLIO,
-    pendingReviews: DEFAULT_PENDING_REVIEWS,
-    routineImages: DEFAULT_ROUTINE,
-  })
+  const [data, setData] = useState<SiteData>(INITIAL)
 
   useEffect(() => {
-    Promise.all([
-      getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(),
-      getActivities(), getServices(), getPortfolio(), getPendingReviews(), getRoutineImages(),
-    ]).then(([site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews, routineImages]) => {
-      setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews, routineImages })
-    }).catch(() => {})
+    let cancelled = false
+
+    async function load() {
+      // Reintenta ante errores de red para no quedarse pegado en datos vacíos.
+      for (let attempt = 0; attempt < 6; attempt++) {
+        try {
+          const [site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews, routineImages] = await Promise.all([
+            getSite(), getContact(), getNews(), getFacilities(),
+            getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(),
+            getActivities(), getServices(), getPortfolio(), getPendingReviews(), getRoutineImages(),
+          ])
+          if (!cancelled) {
+            setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities, services, portfolio, pendingReviews, routineImages, loaded: true })
+          }
+          return
+        } catch {
+          if (cancelled) return
+          await sleep(1000 * (attempt + 1))
+        }
+      }
+    }
+
+    load()
+    return () => { cancelled = true }
   }, [])
 
   return <DataContext.Provider value={data}>{children}</DataContext.Provider>

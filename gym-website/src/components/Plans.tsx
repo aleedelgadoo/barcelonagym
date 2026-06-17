@@ -11,7 +11,7 @@ function gridConfig(count: number): { maxWidth: number; columns: string } {
 }
 
 export default function Plans() {
-  const { plans, site } = useData()
+  const { plans, site, loaded } = useData()
   const { maxWidth, columns } = gridConfig(plans.length)
   const plansSubtitle = site.plansSubtitle ?? DEFAULT_SITE.plansSubtitle
 
@@ -37,6 +37,11 @@ export default function Plans() {
           </p>
         </motion.div>
 
+        {!loaded ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280, marginTop: 56 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.12)', borderTopColor: 'rgba(255,255,255,0.6)', animation: 'spin 0.8s linear infinite' }} />
+          </div>
+        ) : (
         <div style={{ maxWidth, margin: '0 auto', display: 'grid', gridTemplateColumns: columns, gap: 24, marginTop: 56 }}>
           {plans.map((planType, i) => {
             const options = planType.options ?? []
@@ -109,6 +114,7 @@ export default function Plans() {
             )
           })}
         </div>
+        )}
 
 
       </div>

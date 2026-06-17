@@ -175,13 +175,24 @@ export const DEFAULT_FAQS: FAQItem[] = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+// PGRST116 = no se encontró fila (0 resultados). Cualquier otro error es de
+// red/servidor: lo lanzamos para que el caller pueda reintentar en vez de
+// caer silenciosamente en los valores por defecto.
+function isNoRow(error: { code?: string } | null): boolean {
+  return error?.code === 'PGRST116'
+}
+
 async function dbGet<T>(key: string, defaults: T): Promise<T> {
   const { data, error } = await supabase
     .from('site_data')
     .select('value')
     .eq('key', key)
     .single()
-  if (error || !data) return defaults
+  if (error) {
+    if (isNoRow(error)) return defaults
+    throw new Error(error.message)
+  }
+  if (!data) return defaults
   return { ...defaults as object, ...data.value } as T
 }
 
@@ -198,7 +209,11 @@ async function dbGetArray<T>(key: string, defaults: T[]): Promise<T[]> {
     .select('value')
     .eq('key', key)
     .single()
-  if (error || !data) return defaults
+  if (error) {
+    if (isNoRow(error)) return defaults
+    throw new Error(error.message)
+  }
+  if (!data) return defaults
   return data.value as T[]
 }
 

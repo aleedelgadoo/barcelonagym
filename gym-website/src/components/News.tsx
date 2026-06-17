@@ -3,10 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
 
 export default function News() {
-  const { news } = useData()
+  const { news, loaded } = useData()
   const [current, setCurrent] = useState(0)
-  const prev = () => setCurrent(i => (i === 0 ? news.length - 1 : i - 1))
-  const next = () => setCurrent(i => (i === news.length - 1 ? 0 : i + 1))
+  const len = news.length
+  const idx = len > 0 ? Math.min(current, len - 1) : 0
+  const prev = () => setCurrent(() => (idx === 0 ? len - 1 : idx - 1))
+  const next = () => setCurrent(() => (idx === len - 1 ? 0 : idx + 1))
+
+  // No mostrar la sección si ya cargó y no hay novedades
+  if (loaded && len === 0) return null
 
   return (
     <section id="news" style={{ background: '#050505', paddingBlock: 'clamp(36px, 5vw, 68px)' }}>
@@ -27,6 +32,11 @@ export default function News() {
           </h2>
         </motion.div>
 
+        {!loaded ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.12)', borderTopColor: 'rgba(255,255,255,0.6)', animation: 'spin 0.8s linear infinite' }} />
+          </div>
+        ) : (
         <motion.div
           style={{ maxWidth: 760, margin: '0 auto' }}
           initial={{ opacity: 0, y: 32 }}
@@ -36,7 +46,7 @@ export default function News() {
         >
           <AnimatePresence mode="wait">
             <motion.article
-              key={current}
+              key={idx}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
@@ -44,17 +54,17 @@ export default function News() {
             >
               <div style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 32, aspectRatio: '16/9' }}>
                 <img
-                  src={news[current].image}
-                  alt={news[current].title}
+                  src={news[idx].image}
+                  alt={news[idx].title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.82)' }}
                 />
               </div>
-              <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', marginBottom: 14 }}>{news[current].date}</p>
+              <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', marginBottom: 14 }}>{news[idx].date}</p>
               <h3 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 2rem)', fontWeight: 600, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.3, marginBottom: 16 }}>
-                {news[current].title}
+                {news[idx].title}
               </h3>
               <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 300, fontSize: '0.95rem', lineHeight: 1.75 }}>
-                {news[current].description}
+                {news[idx].description}
               </p>
             </motion.article>
           </AnimatePresence>
@@ -71,9 +81,10 @@ export default function News() {
                 </button>
               ))}
             </div>
-            <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>{current + 1} / {news.length}</p>
+            <p style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>{idx + 1} / {len}</p>
           </div>
         </motion.div>
+        )}
 
       </div>
     </section>

@@ -1,5 +1,9 @@
 /* Gym Website Styles */
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .gym-dark {
   @apply bg-[#0f0f0f];
 }
