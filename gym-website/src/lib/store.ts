@@ -75,6 +75,19 @@ export interface ScheduleItem {
   hours: string
 }
 
+export interface ActivitySchedule {
+  day: string
+  hours: string
+}
+
+export interface ActivityItem {
+  id: number
+  name: string
+  description: string
+  image: string
+  schedules: ActivitySchedule[]
+}
+
 export interface ReviewItem {
   id: number
   name: string
@@ -132,6 +145,12 @@ export const DEFAULT_SCHEDULES: ScheduleItem[] = [
   { id: 1, day: 'Lunes a Viernes', hours: '6:00 — 22:00' },
   { id: 2, day: 'Sábado',          hours: '8:00 — 20:00' },
   { id: 3, day: 'Domingo',         hours: '8:00 — 18:00' },
+]
+
+export const DEFAULT_ACTIVITIES: ActivityItem[] = [
+  { id: 1, name: 'Musculación', description: 'Entrenamiento de fuerza e hipertrofia con equipamiento de última generación. Ideal para ganar masa muscular y mejorar tu composición corporal.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: '6:00 — 22:00' }, { day: 'Sábado', hours: '8:00 — 20:00' }, { day: 'Domingo', hours: '8:00 — 18:00' }] },
+  { id: 2, name: 'Cardio', description: 'Zona equipada con cintas, bicicletas y elípticas de primer nivel para mejorar tu resistencia cardiovascular y quemar calorías de forma efectiva.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: '6:00 — 22:00' }, { day: 'Sábado', hours: '8:00 — 20:00' }] },
+  { id: 3, name: 'Clases Grupales', description: 'Clases dirigidas por instructores certificados para todos los niveles. Ambiente motivador, música y resultados garantizados en grupo.', image: 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=1400&q=85', schedules: [{ day: 'Lunes, Miércoles y Viernes', hours: '8:00 — 9:00' }, { day: 'Martes y Jueves', hours: '19:00 — 20:00' }, { day: 'Sábado', hours: '10:00 — 11:00' }] },
 ]
 
 export const DEFAULT_REVIEWS: ReviewItem[] = [
@@ -223,8 +242,11 @@ export const saveSchedules = (d: ScheduleItem[])  => dbSet('bcngym_schedules', d
 export const getReviews  = () => dbGetArray<ReviewItem>  ('bcngym_reviews',    DEFAULT_REVIEWS)
 export const saveReviews = (d: ReviewItem[])  => dbSet('bcngym_reviews', d)
 
-export const getFAQs    = () => dbGetArray<FAQItem>    ('bcngym_faqs',       DEFAULT_FAQS)
-export const saveFAQs   = (d: FAQItem[])    => dbSet('bcngym_faqs', d)
+export const getFAQs       = () => dbGetArray<FAQItem>      ('bcngym_faqs',       DEFAULT_FAQS)
+export const saveFAQs      = (d: FAQItem[])      => dbSet('bcngym_faqs', d)
+
+export const getActivities  = () => dbGetArray<ActivityItem> ('bcngym_activities', DEFAULT_ACTIVITIES)
+export const saveActivities = (d: ActivityItem[]) => dbSet('bcngym_activities', d)
 
 export function todayString(): string {
   const d = new Date()

@@ -10,6 +10,7 @@ import News from './components/News'
 import Location from './components/Location'
 import Contact from './components/Contact'
 import FAQ from './components/FAQ'
+import Activities from './components/Activities'
 import Divider from './components/Divider'
 import SideNav from './components/SideNav'
 import Admin from './pages/Admin'
@@ -33,14 +34,16 @@ function App() {
         <Divider index={2} />
         <Facilities />
         <Divider index={3} />
-        <Plans />
+        <Activities />
         <Divider index={4} />
-        <Differentials />
+        <Plans />
         <Divider index={5} />
-        <Location />
+        <Differentials />
         <Divider index={6} />
-        <FAQ />
+        <Location />
         <Divider index={7} />
+        <FAQ />
+        <Divider index={8} />
         <Reviews />
         <footer style={{ padding: '32px 40px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'center' }}>
           <a

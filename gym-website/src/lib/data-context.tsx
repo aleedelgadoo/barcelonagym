@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
   getSite, getContact, getNews, getFacilities, getDifferentials,
-  getPlans, getSchedules, getReviews, getFAQs,
+  getPlans, getSchedules, getReviews, getFAQs, getActivities,
   DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES,
-  DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
+  DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES,
 } from './store'
 import type {
   SiteInfo, ContactInfo, NewsItem, FacilityItem, DifferentialItem,
-  PlanType, ScheduleItem, ReviewItem, FAQItem,
+  PlanType, ScheduleItem, ReviewItem, FAQItem, ActivityItem,
 } from './store'
 
 interface SiteData {
@@ -20,6 +20,7 @@ interface SiteData {
   schedules: ScheduleItem[]
   reviews: ReviewItem[]
   faqs: FAQItem[]
+  activities: ActivityItem[]
 }
 
 const DataContext = createContext<SiteData>({
@@ -32,6 +33,7 @@ const DataContext = createContext<SiteData>({
   schedules: DEFAULT_SCHEDULES,
   reviews: DEFAULT_REVIEWS,
   faqs: DEFAULT_FAQS,
+  activities: DEFAULT_ACTIVITIES,
 })
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
@@ -45,15 +47,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     schedules: DEFAULT_SCHEDULES,
     reviews: DEFAULT_REVIEWS,
     faqs: DEFAULT_FAQS,
+    activities: DEFAULT_ACTIVITIES,
   })
 
   useEffect(() => {
     Promise.all([
       getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(),
-    ]).then(([site, contact, news, facilities, differentials, plans, schedules, reviews, faqs]) => {
-      setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs })
-    })
+      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(),
+    ]).then(([site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities]) => {
+      setData({ site, contact, news, facilities, differentials, plans, schedules, reviews, faqs, activities })
+    }).catch(() => {})
   }, [])
 
   return <DataContext.Provider value={data}>{children}</DataContext.Provider>

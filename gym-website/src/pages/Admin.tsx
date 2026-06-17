@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite,
-  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, todayString, uploadImage,
-  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS,
+  getNews, getFacilities, getDifferentials, getPlans, getSchedules, getReviews, getFAQs, getContact, getSite, getActivities,
+  saveNews, saveFacilities, saveDifferentials, savePlans, saveSchedules, saveReviews, saveFAQs, saveContact, saveSite, saveActivities, todayString, uploadImage,
+  DEFAULT_SITE, DEFAULT_CONTACT, DEFAULT_NEWS, DEFAULT_FACILITIES, DEFAULT_DIFFERENTIALS, DEFAULT_PLANS, DEFAULT_SCHEDULES, DEFAULT_REVIEWS, DEFAULT_FAQS, DEFAULT_ACTIVITIES,
 } from '../lib/store'
-import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo } from '../lib/store'
+import type { NewsItem, FacilityItem, DifferentialItem, PlanType, PlanOption, ScheduleItem, ReviewItem, FAQItem, ContactInfo, SiteInfo, ActivityItem, ActivitySchedule } from '../lib/store'
 
 const input: React.CSSProperties = {
   width: '100%',
@@ -207,7 +207,7 @@ function AdminLogin({ onAuth }: { onAuth: () => void }) {
 }
 
 function AdminPanel() {
-  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'differentials' | 'plans' | 'schedule' | 'reviews' | 'faq'
+  type Tab = 'general' | 'contact' | 'news' | 'facilities' | 'differentials' | 'plans' | 'schedule' | 'activities' | 'reviews' | 'faq'
   const [tab, setTab] = useState<Tab>('general')
   const [loading, setLoading]                   = useState(true)
   const [site, setSiteState]                    = useState<SiteInfo>       (DEFAULT_SITE)
@@ -219,6 +219,7 @@ function AdminPanel() {
   const [schedules, setSchedulesState]          = useState<ScheduleItem[]>(DEFAULT_SCHEDULES)
   const [reviews, setReviewsState]              = useState<ReviewItem[]>  (DEFAULT_REVIEWS)
   const [faqs, setFaqsState]                    = useState<FAQItem[]>     (DEFAULT_FAQS)
+  const [activities, setActivitiesState]        = useState<ActivityItem[]>(DEFAULT_ACTIVITIES)
   const [isDirty, setIsDirty]                   = useState(false)
   const [saved, setSaved]                       = useState(false)
   const [saveError, setSaveError]               = useState<string | null>(null)
@@ -227,8 +228,8 @@ function AdminPanel() {
   useEffect(() => {
     Promise.all([
       getSite(), getContact(), getNews(), getFacilities(),
-      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(),
-    ]).then(([s, c, n, f, d, p, sc, r, fq]) => {
+      getDifferentials(), getPlans(), getSchedules(), getReviews(), getFAQs(), getActivities(),
+    ]).then(([s, c, n, f, d, p, sc, r, fq, act]) => {
       setSiteState(s)
       setContactState(c)
       setNewsState(n)
@@ -238,6 +239,7 @@ function AdminPanel() {
       setSchedulesState(sc)
       setReviewsState(r)
       setFaqsState(fq)
+      setActivitiesState(act)
       setLoading(false)
     }).catch(err => {
       console.error('Error loading data:', err)
@@ -251,7 +253,7 @@ function AdminPanel() {
     const results = await Promise.all([
       saveSite(site), saveContact(contact), saveNews(news),
       saveDifferentials(differentials), saveFacilities(facilities),
-      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs),
+      savePlans(plans), saveSchedules(schedules), saveReviews(reviews), saveFAQs(faqs), saveActivities(activities),
     ])
     const err = results.find(r => r !== null) ?? null
     if (err) { setSaveError(err); return }
@@ -319,7 +321,15 @@ function AdminPanel() {
   const updateFaq = (id: number, field: keyof FAQItem, value: string) => { setFaqsState(prev => prev.map(f => f.id === id ? { ...f, [field]: value } : f)); markDirty() }
   const deleteFaq = (id: number) => { setFaqsState(prev => prev.filter(f => f.id !== id)); markDirty() }
 
-  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', reviews: 'Testimonios', faq: 'Preguntas' }
+  // Activities
+  const addActivity    = () => { setActivitiesState(prev => [...prev, { id: Date.now(), name: '', description: '', image: '', schedules: [] }]); markDirty() }
+  const updateActivity = (id: number, field: keyof Omit<ActivityItem, 'schedules'>, value: string) => { setActivitiesState(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a)); markDirty() }
+  const deleteActivity = (id: number) => { setActivitiesState(prev => prev.filter(a => a.id !== id)); markDirty() }
+  const addActivitySchedule = (actId: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: [...a.schedules, { day: '', hours: '' }] } : a)); markDirty() }
+  const updateActivitySchedule = (actId: number, idx: number, field: keyof ActivitySchedule, value: string) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.map((s, i) => i === idx ? { ...s, [field]: value } : s) } : a)); markDirty() }
+  const deleteActivitySchedule = (actId: number, idx: number) => { setActivitiesState(prev => prev.map(a => a.id === actId ? { ...a, schedules: a.schedules.filter((_, i) => i !== idx) } : a)); markDirty() }
+
+  const tabLabels: Record<Tab, string> = { general: 'General', contact: 'Contacto', news: 'Novedades', facilities: 'Instalaciones', differentials: 'Diferenciales', plans: 'Planes', schedule: 'Horarios', activities: 'Actividades', reviews: 'Testimonios', faq: 'Preguntas' }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'Inter, sans-serif', WebkitFontSmoothing: 'antialiased' }}>
@@ -343,7 +353,7 @@ function AdminPanel() {
       {/* Tabs */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 40px', display: 'flex', gap: 28, minWidth: 'max-content' }}>
-          {(['general', 'contact', 'news', 'facilities', 'differentials', 'plans', 'schedule', 'reviews', 'faq'] as Tab[]).map(t => (
+          {(['general', 'contact', 'news', 'facilities', 'differentials', 'plans', 'schedule', 'activities', 'reviews', 'faq'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               style={{ paddingBlock: 20, fontSize: 13, fontWeight: tab === t ? 500 : 400, color: tab === t ? '#fff' : 'rgba(255,255,255,0.28)', borderBottom: `1px solid ${tab === t ? '#fff' : 'transparent'}`, background: 'none', cursor: 'pointer', letterSpacing: '0.02em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
               {tabLabels[t]}
@@ -630,6 +640,51 @@ function AdminPanel() {
                     <button onClick={() => deleteFaq(item.id)} style={delBtn}>Eliminar</button>
                   </div>
                   <Field label="Respuesta" value={item.a} onChange={v => updateFaq(item.id, 'a', v)} multiline />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!loading && tab === 'activities' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{activities.length} actividades</p>
+              <button onClick={addActivity} style={{ padding: '9px 20px', borderRadius: 99, background: '#fff', color: '#000', fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none' }}>+ Nueva actividad</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {activities.map(act => (
+                <div key={act.id} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}><Field label="Nombre" value={act.name} onChange={v => updateActivity(act.id, 'name', v)} /></div>
+                    <button onClick={() => deleteActivity(act.id)} style={delBtn}>Eliminar</button>
+                  </div>
+                  <Field label="Descripción" value={act.description} onChange={v => updateActivity(act.id, 'description', v)} multiline />
+                  <div>
+                    <span style={{ display: 'block', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>Imagen</span>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' as const }}>
+                      {act.image && <img src={act.image} alt="" style={{ width: 72, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)' }} />}
+                      <label style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                        Subir foto
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => { const f = e.target.files?.[0]; if (!f) return; const url = await uploadImage(f); updateActivity(act.id, 'image', url) }} />
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <span style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.3)' }}>Horarios</span>
+                      <button onClick={() => addActivitySchedule(act.id)} style={{ fontSize: 11, padding: '5px 12px', borderRadius: 99, background: 'rgba(255,255,255,0.08)', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Horario</button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {act.schedules.map((s, i) => (
+                        <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                          <div style={{ flex: 1 }}><Field label="Día" value={s.day} onChange={v => updateActivitySchedule(act.id, i, 'day', v)} /></div>
+                          <div style={{ flex: 1 }}><Field label="Horario" value={s.hours} onChange={v => updateActivitySchedule(act.id, i, 'hours', v)} /></div>
+                          <button onClick={() => deleteActivitySchedule(act.id, i)} style={{ ...delBtn, marginTop: 22 }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

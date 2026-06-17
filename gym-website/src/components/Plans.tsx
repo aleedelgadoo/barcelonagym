@@ -69,54 +69,44 @@ export default function Plans() {
                   </p>
                 </div>
 
-                {/* Plan destacado */}
-                {highlighted && (
-                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '24px', marginBottom: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 20 }}>
-                      <span style={{ fontSize: '2.2rem', fontWeight: 300, letterSpacing: '-0.04em', color: '#fff' }}>
-                        ${highlighted.price}
-                      </span>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 300, color: 'rgba(255,255,255,0.35)' }}>
-                        {highlighted.duration}
-                      </span>
-                      <span style={{ fontSize: 8, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '3px 8px', borderRadius: 999, marginLeft: 'auto' }}>
-                        Popular
-                      </span>
-                    </div>
+                {/* Features */}
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 28 }}>
+                  {planType.features.map((f, j) => (
+                    <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <svg style={{ width: 13, height: 13, marginTop: 3, flexShrink: 0, color: 'rgba(255,255,255,0.25)' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 300, lineHeight: 1.5, color: 'rgba(255,255,255,0.4)' }}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                    <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {planType.features.map((f, j) => (
-                        <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                          <svg style={{ width: 14, height: 14, marginTop: 2, flexShrink: 0, color: 'rgba(255,255,255,0.28)' }} fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 300, lineHeight: 1.4, color: 'rgba(255,255,255,0.45)' }}>
-                            {f}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Otros planes */}
-                {others.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto' }}>
-                    <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 8 }}>
-                      Otros planes
-                    </p>
-                    {others.map(option => (
-                      <div key={option.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBlock: 10, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.45)' }}>
+                {/* Todas las opciones juntas */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 'auto' }}>
+                  {options.map(option => (
+                    <div key={option.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '12px 16px', borderRadius: 10,
+                      ...(option.highlighted
+                        ? { background: '#fff', border: '1px solid #fff' }
+                        : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }),
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: option.highlighted ? 500 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.5)' }}>
                           {option.duration}
                         </span>
-                        <span style={{ fontSize: '0.95rem', fontWeight: 300, color: 'rgba(255,255,255,0.7)' }}>
-                          ${option.price}
-                        </span>
+                        {option.highlighted && (
+                          <span style={{ fontSize: 8, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, background: 'rgba(0,0,0,0.08)', color: '#000', padding: '2px 7px', borderRadius: 999 }}>
+                            Popular
+                          </span>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <span style={{ fontSize: option.highlighted ? '1.05rem' : '0.95rem', fontWeight: option.highlighted ? 600 : 300, color: option.highlighted ? '#000' : 'rgba(255,255,255,0.65)' }}>
+                        ${option.price}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             )
           })}
