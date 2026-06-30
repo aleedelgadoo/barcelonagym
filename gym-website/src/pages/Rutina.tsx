@@ -41,6 +41,7 @@ function RutinaContent() {
                   key={current}
                   src={routineImages[current].url}
                   alt=""
+                  decoding="async"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

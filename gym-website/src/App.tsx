@@ -1,4 +1,5 @@
 import './App.css'
+import { lazy, Suspense } from 'react'
 import { DataProvider } from './lib/data-context'
 import Hero from './components/Hero'
 import Schedule from './components/Schedule'
@@ -13,17 +14,27 @@ import FAQ from './components/FAQ'
 import Activities from './components/Activities'
 import Divider from './components/Divider'
 import SideNav from './components/SideNav'
-import Admin from './pages/Admin'
-import Galeria from './pages/Galeria'
-import Rutina from './pages/Rutina'
+
+// Páginas aparte: no se necesitan para la home, se cargan bajo demanda.
+const Admin = lazy(() => import('./pages/Admin'))
+const Galeria = lazy(() => import('./pages/Galeria'))
+const Rutina = lazy(() => import('./pages/Rutina'))
+
+function PageFallback() {
+  return (
+    <div style={{ minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 34, height: 34, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.12)', borderTopColor: 'rgba(255,255,255,0.6)', animation: 'spin 0.8s linear infinite' }} />
+    </div>
+  )
+}
 
 function App() {
   const path = window.location.pathname
-  if (path === '/admin') return <Admin />
   // Rutas nuevas (las viejas /galeria y /rutina quedaron con un 308 cacheado en
   // Chrome, así que usamos URLs frescas). Se mantienen las viejas por compatibilidad.
-  if (path === '/fotos' || path === '/galeria') return <Galeria />
-  if (path === '/plantilla' || path === '/rutina') return <Rutina />
+  if (path === '/admin') return <Suspense fallback={<PageFallback />}><Admin /></Suspense>
+  if (path === '/fotos' || path === '/galeria') return <Suspense fallback={<PageFallback />}><Galeria /></Suspense>
+  if (path === '/plantilla' || path === '/rutina') return <Suspense fallback={<PageFallback />}><Rutina /></Suspense>
 
   return (
     <DataProvider>

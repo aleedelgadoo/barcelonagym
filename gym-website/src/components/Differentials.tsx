@@ -52,6 +52,8 @@ export default function Differentials() {
                 key={safeIndex}
                 src={differentials[safeIndex].image}
                 alt={differentials[safeIndex].name}
+                loading="lazy"
+                decoding="async"
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

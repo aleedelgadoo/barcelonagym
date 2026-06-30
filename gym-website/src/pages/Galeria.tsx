@@ -74,7 +74,7 @@ function GaleriaContent() {
               >
                 {item.type === 'video' ? (
                   <>
-                    <video src={item.url} muted preload="metadata" playsInline style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
+                    <video src={`${item.url}#t=0.1`} muted preload="metadata" playsInline style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
                       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
                       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
@@ -84,7 +84,7 @@ function GaleriaContent() {
                     </div>
                   </>
                 ) : (
-                  <img src={item.url} alt={item.caption} style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
+                  <img src={item.url} alt={item.caption} loading="lazy" decoding="async" style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
                     onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
                     onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
                 )}

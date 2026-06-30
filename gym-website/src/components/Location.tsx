@@ -48,6 +48,8 @@ export default function Location() {
               <img
                 src={site.locationPhoto}
                 alt="Barcelona Gym"
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 200, filter: 'brightness(0.78)' }}
               />
             </div>

@@ -219,17 +219,51 @@ async function dbGetArray<T>(key: string, defaults: T[]): Promise<T[]> {
 
 // ─── Image upload ────────────────────────────────────────────────────────────
 
+// Redimensiona y comprime imágenes en el navegador antes de subirlas, para que
+// pesen mucho menos y carguen rápido. Mantiene PNG (transparencia) como PNG;
+// el resto se convierte a JPEG. Si algo falla, sube el archivo original.
+export async function compressImage(file: File, maxDim = 1600, quality = 0.82): Promise<File> {
+  if (!file.type.startsWith('image/')) return file
+  if (file.type === 'image/svg+xml' || file.type === 'image/gif') return file
+  const isPng = file.type === 'image/png'
+  try {
+    const bitmap = await createImageBitmap(file)
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height))
+    // Ya es chica y liviana: no vale la pena recomprimir.
+    if (scale === 1 && file.size < 300 * 1024) { bitmap.close?.(); return file }
+    const w = Math.round(bitmap.width * scale)
+    const h = Math.round(bitmap.height * scale)
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) { bitmap.close?.(); return file }
+    ctx.drawImage(bitmap, 0, 0, w, h)
+    bitmap.close?.()
+    const outType = isPng ? 'image/png' : 'image/jpeg'
+    const blob: Blob | null = await new Promise(res => canvas.toBlob(res, outType, quality))
+    if (!blob || blob.size >= file.size) return file
+    const name = file.name.replace(/\.[^.]+$/, '') + (isPng ? '.png' : '.jpg')
+    return new File([blob], name, { type: outType })
+  } catch {
+    return file
+  }
+}
+
 export async function uploadImage(file: File): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const compressed = await compressImage(file)
+  const ext = compressed.name.split('.').pop() ?? 'jpg'
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const { error } = await supabase.storage.from('fotos').upload(path, file, { upsert: false, contentType: file.type })
+  const { error } = await supabase.storage.from('fotos').upload(path, compressed, { upsert: false, contentType: compressed.type })
   if (error) throw new Error(error.message)
   const { data } = supabase.storage.from('fotos').getPublicUrl(path)
   return data.publicUrl
 }
 
 export async function uploadWithProgress(file: File, onProgress: (pct: number) => void): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'bin'
+  // Comprime imágenes (los videos se suben tal cual).
+  const toUpload = file.type.startsWith('image/') ? await compressImage(file) : file
+  const ext = toUpload.name.split('.').pop() ?? 'bin'
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
@@ -241,9 +275,9 @@ export async function uploadWithProgress(file: File, onProgress: (pct: number) =
     xhr.onerror = () => reject(new Error('Error de red'))
     xhr.open('POST', `${supabaseUrl}/storage/v1/object/fotos/${path}`)
     xhr.setRequestHeader('Authorization', `Bearer ${supabaseKey}`)
-    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.setRequestHeader('Content-Type', toUpload.type)
     xhr.setRequestHeader('x-upsert', 'false')
-    xhr.send(file)
+    xhr.send(toUpload)
   })
 
   return `${supabaseUrl}/storage/v1/object/public/fotos/${path}`

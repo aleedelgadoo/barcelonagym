@@ -50,6 +50,8 @@ export default function Facilities() {
                 key={current}
                 src={facilities[current].image}
                 alt={facilities[current].name}
+                loading="lazy"
+                decoding="async"
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.72)' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -77,7 +79,7 @@ export default function Facilities() {
             {facilities.map((f, i) => (
               <button key={f.id} onClick={() => setCurrent(i)}
                 style={{ position: 'relative', height: 60, overflow: 'hidden', opacity: i === current ? 1 : 0.3, transition: 'opacity 0.3s', cursor: 'pointer' }}>
-                <img src={f.image} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={f.image} alt={f.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 {i === current && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: '#fff' }} />}
               </button>
             ))}
@@ -136,7 +138,7 @@ export default function Facilities() {
                 >
                   <div style={{ width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {s.image
-                      ? <img src={s.image} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ? <img src={s.image} alt={s.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                       : <div style={{ width: 48, height: 48, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }} />
                     }
                   </div>

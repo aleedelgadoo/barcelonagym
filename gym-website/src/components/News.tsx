@@ -61,6 +61,8 @@ export default function News() {
                 <img
                   src={news[idx].image}
                   alt={news[idx].title}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.82)' }}
                 />
               </div>
