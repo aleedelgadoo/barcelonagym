@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DataProvider, useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 
 function RutinaContent() {
   const { routineImages } = useData()
@@ -39,7 +40,7 @@ function RutinaContent() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={current}
-                  src={routineImages[current].url}
+                  src={imgUrl(routineImages[current].url, 1400, 80)}
                   alt=""
                   decoding="async"
                   initial={{ opacity: 0 }}

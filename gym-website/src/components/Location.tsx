@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 
 export default function Location() {
   const { site } = useData()
@@ -46,7 +47,7 @@ export default function Location() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ borderRadius: 20, overflow: 'hidden', flex: 1, border: '1px solid rgba(255,255,255,0.06)' }}>
               <img
-                src={site.locationPhoto}
+                src={imgUrl(site.locationPhoto, 900)}
                 alt="Barcelona Gym"
                 loading="lazy"
                 decoding="async"

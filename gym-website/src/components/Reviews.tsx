@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
 import CarouselArrows from './CarouselArrows'
-import { getPendingReviews, savePendingReviews, uploadImage } from '../lib/store'
+import { getPendingReviews, savePendingReviews, uploadImage, imgUrl } from '../lib/store'
 import type { PendingReview } from '../lib/store'
 
 function ReviewForm({ onClose }: { onClose: () => void }) {
@@ -160,7 +160,7 @@ export default function Reviews() {
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     {reviews[idx].image
-                      ? <img src={reviews[idx].image} alt={reviews[idx].name} loading="lazy" decoding="async" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(15%)' }} />
+                      ? <img src={imgUrl(reviews[idx].image, 120)} alt={reviews[idx].name} loading="lazy" decoding="async" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(15%)' }} />
                       : <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <svg width={20} height={20} fill="none" stroke="rgba(255,255,255,0.4)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         </div>

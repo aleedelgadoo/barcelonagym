@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 
 const ease = 'easeOut' as const
 
@@ -12,7 +13,7 @@ export default function Hero() {
       {/* Imagen de fondo */}
       <div className="absolute inset-0 z-0" style={{ backgroundColor: '#000' }}>
         <img
-          src={site.heroBg}
+          src={imgUrl(site.heroBg, 1920, 72)}
           alt=""
           fetchPriority="high"
           decoding="async"

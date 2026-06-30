@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 import CarouselArrows from './CarouselArrows'
 
 export default function Facilities() {
@@ -48,7 +49,7 @@ export default function Facilities() {
             <AnimatePresence mode="wait">
               <motion.img
                 key={current}
-                src={facilities[current].image}
+                src={imgUrl(facilities[current].image, 1200)}
                 alt={facilities[current].name}
                 loading="lazy"
                 decoding="async"
@@ -79,7 +80,7 @@ export default function Facilities() {
             {facilities.map((f, i) => (
               <button key={f.id} onClick={() => setCurrent(i)}
                 style={{ position: 'relative', height: 60, overflow: 'hidden', opacity: i === current ? 1 : 0.3, transition: 'opacity 0.3s', cursor: 'pointer' }}>
-                <img src={f.image} alt={f.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={imgUrl(f.image, 160)} alt={f.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 {i === current && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: '#fff' }} />}
               </button>
             ))}

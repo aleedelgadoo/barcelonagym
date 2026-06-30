@@ -219,6 +219,15 @@ async function dbGetArray<T>(key: string, defaults: T[]): Promise<T[]> {
 
 // ─── Image upload ────────────────────────────────────────────────────────────
 
+// Reescribe una URL de Supabase Storage al endpoint de transformación, que
+// sirve la imagen redimensionada (y en WebP si el navegador lo soporta) y
+// cacheada en CDN. Si la URL no es de storage (ej. /hero-bg.jpg), la deja igual.
+export function imgUrl(url: string | undefined, width: number, quality = 68): string {
+  if (!url || !url.includes('/storage/v1/object/public/')) return url ?? ''
+  const rendered = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
+  return `${rendered}?width=${width}&quality=${quality}&resize=cover`
+}
+
 // Redimensiona y comprime imágenes en el navegador antes de subirlas, para que
 // pesen mucho menos y carguen rápido. Mantiene PNG (transparencia) como PNG;
 // el resto se convierte a JPEG. Si algo falla, sube el archivo original.

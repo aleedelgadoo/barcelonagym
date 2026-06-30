@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DataProvider } from '../lib/data-context'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 import type { PortfolioItem } from '../lib/store'
 
 function Lightbox({ item, onClose }: { item: PortfolioItem; onClose: () => void }) {
@@ -18,7 +19,7 @@ function Lightbox({ item, onClose }: { item: PortfolioItem; onClose: () => void 
       >
         {item.type === 'video'
           ? <video src={item.url} controls autoPlay style={{ width: '100%', display: 'block', maxHeight: '82vh', background: '#000' }} />
-          : <img src={item.url} alt={item.caption} style={{ width: '100%', display: 'block', maxHeight: '88vh', objectFit: 'contain' }} />
+          : <img src={imgUrl(item.url, 1600, 78)} alt={item.caption} style={{ width: '100%', display: 'block', maxHeight: '88vh', objectFit: 'contain' }} />
         }
         {item.caption && (
           <div style={{ background: 'rgba(0,0,0,0.75)', padding: '12px 20px' }}>
@@ -84,7 +85,7 @@ function GaleriaContent() {
                     </div>
                   </>
                 ) : (
-                  <img src={item.url} alt={item.caption} loading="lazy" decoding="async" style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
+                  <img src={imgUrl(item.url, 600, 65)} alt={item.caption} loading="lazy" decoding="async" style={{ width: '100%', display: 'block', transition: 'transform 0.4s ease' }}
                     onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
                     onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
                 )}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 import CarouselArrows from './CarouselArrows'
 
 export default function Differentials() {
@@ -50,7 +51,7 @@ export default function Differentials() {
             <AnimatePresence mode="wait">
               <motion.img
                 key={safeIndex}
-                src={differentials[safeIndex].image}
+                src={imgUrl(differentials[safeIndex].image, 1200)}
                 alt={differentials[safeIndex].name}
                 loading="lazy"
                 decoding="async"

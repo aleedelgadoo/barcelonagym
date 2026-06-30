@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 import CarouselArrows from './CarouselArrows'
 
 export default function News() {
@@ -59,7 +60,7 @@ export default function News() {
             >
               <div style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 32, aspectRatio: '16/9' }}>
                 <img
-                  src={news[idx].image}
+                  src={imgUrl(news[idx].image, 1000)}
                   alt={news[idx].title}
                   loading="lazy"
                   decoding="async"

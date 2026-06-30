@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useData } from '../lib/data-context'
+import { imgUrl } from '../lib/store'
 import CarouselArrows from './CarouselArrows'
 
 export default function Activities() {
@@ -52,7 +53,7 @@ export default function Activities() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={idx}
-                  src={activity.image}
+                  src={imgUrl(activity.image, 1200)}
                   alt={activity.name}
                   loading="lazy"
                   decoding="async"
