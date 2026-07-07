@@ -11,6 +11,9 @@ export default function Facilities() {
   const prev = () => setCurrent(i => (i === 0 ? len - 1 : i - 1))
   const next = () => setCurrent(i => (i === len - 1 ? 0 : i + 1))
 
+  // Sin instalaciones cargadas no renderizamos nada (evita datos de ejemplo).
+  if (facilities.length === 0) return null
+
   return (
     <section id="facilities" style={{ background: '#050505', paddingBlock: 'clamp(36px, 5vw, 68px)' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto', paddingInline: 'clamp(24px, 5vw, 80px)' }}>

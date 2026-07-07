@@ -107,45 +107,16 @@ export interface FAQItem {
   a: string
 }
 
-export const DEFAULT_DIFFERENTIALS: DifferentialItem[] = [
-  { id: 1, name: 'Tecnología de Punta',     description: 'Equipamiento de ultima generación. Nuestras máquinas están diseñadas para maximizar tu rendimiento y minimizar el riesgo de lesiones.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85' },
-  { id: 2, name: 'Espacios Cómodos',        description: 'Instalaciones modernas y limpias con aire acondicionado, vestuarios amplios, duchas privadas y zonas de descanso relajantes para tu comodidad.',        image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1400&q=85' },
-  { id: 3, name: 'Resultados Garantizados', description: 'Entrenadores certificados crean planes personalizados según tus objetivos. Seguimiento semanal de progreso y ajustes constantes para máximos resultados.',  image: 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=1400&q=85' },
-  { id: 4, name: 'Comunidad Motivadora',    description: 'Únete a una comunidad de personas comprometidas con su salud. Clases grupales, desafíos mensuales y eventos sociales para mantener la motivación.',       image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85' },
-]
+// Los contenidos que el usuario edita (con fotos/textos reales) NO tienen
+// valores de ejemplo hardcodeados: arrancan vacíos y solo muestran los datos
+// reales de Supabase, para que nunca aparezca una "segunda versión" ficticia.
+export const DEFAULT_DIFFERENTIALS: DifferentialItem[] = []
 
-export const DEFAULT_NEWS: NewsItem[] = [
-  { id: 1, title: 'Nueva clase de entrenamiento HIIT', date: '10 de Junio, 2024', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&q=85', description: 'Hemos lanzado una nueva clase de alta intensidad. Lunes y miércoles a las 7 PM con nuestro mejor entrenador.' },
-  { id: 2, title: 'Renovación de equipamiento', date: '5 de Junio, 2024', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=700&q=85', description: 'Nuevas máquinas de cardio de última generación. ¡Ven a probarlas y mejora tu experiencia de entrenamiento!' },
-  { id: 3, title: 'Programa de nutrición gratuito', date: '1 de Junio, 2024', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=700&q=85', description: 'Los miembros VIP ahora reciben asesoramiento nutricional personalizado. Programa disponible todo el mes.' },
-]
+export const DEFAULT_NEWS: NewsItem[] = []
 
-export const DEFAULT_FACILITIES: FacilityItem[] = [
-  { id: 1, name: 'Zona de Pesas', description: 'Mancuernas y máquinas de última generación para un entrenamiento completo.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85' },
-  { id: 2, name: 'Cardio', description: 'Cintas de correr, bicicletas estáticas y elípticas de primer nivel.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85' },
-  { id: 3, name: 'Baños y Vestuarios Unisex', description: 'Instalaciones cómodas y funcionales equipadas con baños, duchas y bancos de descanso. Un espacio diseñado para brindarte comodidad, higiene y bienestar antes y después de cada entrenamiento.', image: '/baños.jpeg' },
-  { id: 4, name: 'Comunidad y Descanso', description: 'Más que un gimnasio, un lugar para conectar con otras personas, compartir un mate y disfrutar de un ambiente cercano y familiar.', image: '/mesa.jpeg' },
-  { id: 5, name: 'Lockers Personales', description: 'Guardá tus pertenencias con tranquilidad mientras entrenás. Contamos con lockers prácticos y seguros para que disfrutes tu rutina con total comodidad.', image: '/locker.jpeg' },
-  { id: 6, name: 'Duchas y Vestuarios', description: 'Instalaciones modernas con todas las comodidades para tu higiene personal.', image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1400&q=85' },
-]
+export const DEFAULT_FACILITIES: FacilityItem[] = []
 
-export const DEFAULT_PLANS: PlanType[] = [
-  { id: 1, name: 'Plan Básico', description: 'Perfecto para comenzar tu viaje fitness', features: ['Acceso a todas las áreas del gym', 'Horario: 6am - 10pm', 'Apoyo en línea', 'Acceso a app móvil'], options: [
-    { id: 101, duration: 'Mensual', price: '29.99', highlighted: true },
-    { id: 102, duration: 'Anual', price: '299.99', highlighted: false },
-    { id: 103, duration: '3 meses', price: '74.99', highlighted: false },
-  ]},
-  { id: 2, name: 'Plan Premium', description: 'Lo más popular entre nuestros miembros', features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (2 sesiones/mes)', 'Acceso a sauna', 'Agua y toallas incluidas', 'Acceso a app móvil'], options: [
-    { id: 201, duration: 'Mensual', price: '49.99', highlighted: true },
-    { id: 202, duration: 'Anual', price: '499.99', highlighted: false },
-    { id: 203, duration: '3 meses', price: '124.99', highlighted: false },
-  ]},
-  { id: 3, name: 'Plan VIP', description: 'Experiencia completa con máximos beneficios', features: ['Acceso 24/7 al gym', 'Clases grupales ilimitadas', 'Entrenador personal (8 sesiones/mes)', 'Acceso a sauna y spa', 'Nutricionista consultas', 'Ropa y accesorios gym', 'Prioridad en reservas', 'Acceso a app móvil premium'], options: [
-    { id: 301, duration: 'Mensual', price: '79.99', highlighted: true },
-    { id: 302, duration: 'Anual', price: '799.99', highlighted: false },
-    { id: 303, duration: '3 meses', price: '199.99', highlighted: false },
-  ]},
-]
+export const DEFAULT_PLANS: PlanType[] = []
 
 export const DEFAULT_SCHEDULES: ScheduleItem[] = [
   { id: 1, day: 'Lunes a Viernes', hours: '6:00 — 22:00' },
@@ -153,18 +124,9 @@ export const DEFAULT_SCHEDULES: ScheduleItem[] = [
   { id: 3, day: 'Domingo',         hours: '8:00 — 18:00' },
 ]
 
-export const DEFAULT_ACTIVITIES: ActivityItem[] = [
-  { id: 1, name: 'Musculación', description: 'Entrenamiento de fuerza e hipertrofia con equipamiento de última generación. Ideal para ganar masa muscular y mejorar tu composición corporal.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: ['6:00 — 22:00'] }, { day: 'Sábado', hours: ['8:00 — 20:00'] }, { day: 'Domingo', hours: ['8:00 — 18:00'] }] },
-  { id: 2, name: 'Cardio', description: 'Zona equipada con cintas, bicicletas y elípticas de primer nivel para mejorar tu resistencia cardiovascular y quemar calorías de forma efectiva.', image: 'https://images.unsplash.com/photo-1576091160550-112173fbb446?w=1400&q=85', schedules: [{ day: 'Lunes a Viernes', hours: ['6:00 — 22:00'] }, { day: 'Sábado', hours: ['8:00 — 20:00'] }] },
-  { id: 3, name: 'Clases Grupales', description: 'Clases dirigidas por instructores certificados para todos los niveles. Ambiente motivador, música y resultados garantizados en grupo.', image: 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=1400&q=85', schedules: [{ day: 'Lunes, Miércoles y Viernes', hours: ['8:00 — 9:00', '21:00 — 22:00'] }, { day: 'Martes y Jueves', hours: ['19:00 — 20:00'] }, { day: 'Sábado', hours: ['10:00 — 11:00'] }] },
-]
+export const DEFAULT_ACTIVITIES: ActivityItem[] = []
 
-export const DEFAULT_REVIEWS: ReviewItem[] = [
-  { id: 1, name: 'Juan García',     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face', text: 'El mejor equipamiento de la ciudad. Los entrenadores son muy profesionales y el ambiente es increíblemente motivador.' },
-  { id: 2, name: 'María López',     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face', text: 'Las instalaciones son impecables y los precios muy competitivos. Totalmente recomendado para cualquier nivel.' },
-  { id: 3, name: 'Carlos Martínez', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face', text: 'He logrado mis objetivos de fitness aquí. El personal es atento y siempre dispuesto a ayudar. 5 estrellas.' },
-  { id: 4, name: 'Ana Rodríguez',   image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face', text: 'Ambiente familiar y profesional. Las clases son variadas y motivadoras. Muy satisfecha con mi membresía.' },
-]
+export const DEFAULT_REVIEWS: ReviewItem[] = []
 
 export const DEFAULT_FAQS: FAQItem[] = [
   { id: 1, q: '¿Cuáles son los horarios del gimnasio?', a: 'De lunes a viernes de 7:00 a 22:00 hs. Sábados de 8:00 a 20:00 hs. Domingos y feriados de 9:00 a 14:00 hs.' },
@@ -357,12 +319,7 @@ export const DEFAULT_PORTFOLIO: PortfolioItem[] = []
 export const getPortfolio  = () => dbGetArray<PortfolioItem>('bcngym_portfolio', DEFAULT_PORTFOLIO)
 export const savePortfolio = (d: PortfolioItem[]) => dbSet('bcngym_portfolio', d)
 
-export const DEFAULT_SERVICES: ServiceItem[] = [
-  { id: 1, name: 'Vestuario',        image: '' },
-  { id: 2, name: 'Lockers',          image: '' },
-  { id: 3, name: 'WiFi Gratuito',    image: '' },
-  { id: 4, name: 'Zona de Hidratación', image: '' },
-]
+export const DEFAULT_SERVICES: ServiceItem[] = []
 
 export const getServices  = () => dbGetArray<ServiceItem> ('bcngym_services', DEFAULT_SERVICES)
 export const saveServices = (d: ServiceItem[]) => dbSet('bcngym_services', d)
