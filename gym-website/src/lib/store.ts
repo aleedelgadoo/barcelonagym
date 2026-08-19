@@ -181,13 +181,16 @@ async function dbGetArray<T>(key: string, defaults: T[]): Promise<T[]> {
 
 // ─── Image upload ────────────────────────────────────────────────────────────
 
-// Reescribe una URL de Supabase Storage al endpoint de transformación, que
-// sirve la imagen redimensionada (y en WebP si el navegador lo soporta) y
-// cacheada en CDN. Si la URL no es de storage (ej. /hero-bg.jpg), la deja igual.
-export function imgUrl(url: string | undefined, width: number, quality = 68): string {
-  if (!url || !url.includes('/storage/v1/object/public/')) return url ?? ''
-  const rendered = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
-  return `${rendered}?width=${width}&quality=${quality}&resize=cover`
+// El endpoint de transformación de imágenes de Supabase Storage
+// (/storage/v1/render/image/public/...) solo está disponible en el plan Pro
+// en adelante. En el plan Free devuelve 403 "FeatureNotEnabled" y la imagen
+// nunca carga. Por eso servimos siempre la URL original del bucket, que sí
+// funciona en cualquier plan. Si en el futuro se actualiza a un plan que
+// soporte transformaciones, se puede volver a reescribir la URL acá.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- width/quality se
+// mantienen en la firma para no tener que tocar todos los call-sites existentes.
+export function imgUrl(url: string | undefined, _width: number, _quality = 68): string {
+  return url ?? ''
 }
 
 // Redimensiona y comprime imágenes en el navegador antes de subirlas, para que
